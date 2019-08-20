@@ -6,18 +6,18 @@ program_start = time.time()
 Rabi_Freq_Amp = 100  # Rabi Frequency amp for Mg experiment
 f_0 = 0  # set the reference
 f_res = 0  # Let's say
-gamma = 2.54e2/1000000  # A coef for Mg I 3P1 to 1S0 457 nm
+gamma = 2.54e2/1000  # A coef for Mg I 3P1 to 1S0 457 nm
 
 # TIME DEFINITIONS (maybe redo ditch the ns scale)
-t_avr = 10000
-t_buffer = 10000
-t_separation = 10000
-t_start = 1000
-t_width = 100
+t_avr = 10
+t_buffer = 100
+t_separation = 100
+t_start = 2
+t_width = 0.5
 interaction_time = 2*t_start + 3*t_separation + t_buffer 
-N_T_sampling = 1000000
+N_T_sampling = 10000000
 t_span = np.linspace(0, interaction_time + t_avr, N_T_sampling)*0.001  # t in ms
-dt = t_span[0]-t_span[1]
+dt = t_span[1]-t_span[0]
 N_avr = int(t_avr*0.001/dt)
 
 # INITIAL STATE DEF
@@ -25,8 +25,8 @@ rho_0 = np.zeros(shape=[3])
 rho_0[0] = NORM
 
 #FREQ SCAN DEF
-freq_span = 0.1
-N_sampling = 1000
+freq_span = 150
+N_sampling = 500
 f_0_span = np.linspace(-freq_span, freq_span, N_sampling)
 f_0_span += f_res
 
@@ -36,7 +36,7 @@ def freq_scanner_single(f_0):
     rho_t = integrate.odeint(von_neumann_tunable_4_rabi, rho_0, t_span, args=(Rabi_Freq_Amp, f_res, f_0, t_start, t_separation, t_width, interaction_time, gamma))
     np.transpose(rho_t)
     Exited_t = NORM - rho_t[:, 0]
-    return np.mean(Exited_t[-N_avr:])
+    return np.sum(Exited_t[-N_avr:])
 
 
 if __name__ == '__main__':
@@ -51,7 +51,7 @@ if __name__ == '__main__':
                  label='Rabi Frequency')
         plt.plot(t_span * 1000, np.ones(shape=t_span.shape) * f_res, label='Resonant detunning')
         plt.plot(t_span * 1000, 100 * interogation(t_span, interaction_time), label='Interogation time')
-        plt.plot(t_span * 1000, 10 * buffering(t_span, interaction_time, t_buffer), label='Buffering time')
+        plt.plot(t_span * 1000, 50 * buffering(t_span, interaction_time, t_buffer), label='Buffering time')
         plt.legend()
         plt.draw()
 
@@ -63,15 +63,17 @@ if __name__ == '__main__':
         plt.plot(t_span, Exited_t, t_span, np.max(Exited_t) * interogation(t_span, interaction_time))
         plt.draw()
 
-        Exited_f0 = p.map(freq_scanner_single, f_0_span)
+        Exited_f0 = np.array(list(p.map(freq_scanner_single, f_0_span)))
         p.close()
         Detunning_span = f_0_span-f_res
 
         plt.figure(3)
-        plt.title('Fluorescence signal vs starting frequency')
+        plt.title('Dip in background signal vs starting frequency')
         plt.xlabel('Starting frequency of the laser [MHz]')
         plt.ylabel('Fluorescence signal [AU]')
-        plt.plot(Detunning_span, Exited_f0)
+        print(N_avr*NORM)
+        print(Exited_f0)
+        plt.plot(Detunning_span, (N_avr*NORM - Exited_f0)/N_avr/NORM)
         plt.draw()
 
         comp_time = time.time() - program_start
