@@ -1,3 +1,3 @@
-Phyton CODE used in my Summer School Project 2019:
+# Phyton CODE used in my Summer School Project 2019:
 
-- aims is to explore new methods of fast ion beam spectroscopy
+- Aim is to explore new methods of fast ion beam spectroscopy
