@@ -1,4 +1,5 @@
 from two_level_complete_header import *
+from send_email import send_email
 
 program_start = time.time()
 
@@ -43,27 +44,7 @@ if __name__ == '__main__':
     with mp.Pool(mp.cpu_count()) as p:
         print('Freq span: ' + str(1000*freq_span) + 'kHz Number of sampling: ' + str(N_sampling))
         print('N_avr: ' + str(N_avr))
-        # plt.figure(1)
-        # plt.title('Protocol')
-        # plt.xlabel('Time of flight [ns]')
-        # plt.ylabel('Frequency [MHz]')
-        # plt.plot(t_span*1000,
-        #          quadruple_tunable_switch(t_span, t_start, t_separation, t_width, interaction_time, Rabi_Freq_Amp),
-        #          label='Rabi Frequency')
-        # plt.plot(t_span * 1000, np.ones(shape=t_span.shape) * f_res, label='Resonant detunning')
-        # plt.plot(t_span * 1000, 1 * interogation(t_span, interaction_time, t_buffer), label='Interogation time')
-        # plt.plot(t_span * 1000, 0.5 * buffering(t_span, interaction_time, t_buffer), label='Buffering time')
-        # plt.legend()
-        # plt.draw()
 
-        # rho_t = integrate.odeint(von_neumann_tunable_4_rabi, rho_0, t_span, args=(Rabi_Freq_Amp, f_res, f_0, t_start, t_separation, t_width, interaction_time, gamma))
-        # np.transpose(rho_t)
-        # Exited_t = NORM - rho_t[:, 0]
-
-        # plt.figure(2)
-        # plt.plot(t_span, Exited_t, t_span, np.max(Exited_t) * interogation(t_span, interaction_time, t_buffer))
-        # plt.draw()
-        #
         Exited_f0 = np.array(list(p.map(freq_scanner_single, f_0_span)))
         p.close()
         Detunning_span = f_0_span-f_res
@@ -75,13 +56,38 @@ if __name__ == '__main__':
         # print(N_avr*NORM)
         # print(Exited_f0)
         plt.plot(Detunning_span, np.gradient(Exited_f0/N_avr/NORM))
+        plt.savefig('fig3.pdf')
         plt.draw()
+
+        plt.figure(1)
+        plt.title('Protocol')
+        plt.xlabel('Time of flight [ns]')
+        plt.ylabel('Frequency [MHz]')
+        plt.plot(t_span[0::100]*1000,
+                 quadruple_tunable_switch(t_span, t_start, t_separation, t_width, interaction_time, Rabi_Freq_Amp)[0::100],
+                 label='Rabi Frequency')
+        plt.plot(t_span[0::100] * 1000, np.ones(shape=t_span.shape)[0::100] * f_res, label='Resonant detunning')
+        plt.plot(t_span[0::100] * 1000, 1 * interogation(t_span, interaction_time, t_buffer)[0::100], label='Interogation time')
+        plt.plot(t_span[0::100] * 1000, 0.5 * buffering(t_span, interaction_time, t_buffer)[0::100], label='Buffering time')
+        plt.legend()
+        plt.savefig('fig1.pdf')
+        # plt.draw()
+
+        rho_t = integrate.odeint(von_neumann_tunable_4_rabi, rho_0, t_span, args=(Rabi_Freq_Amp, f_res, f_0, t_start, t_separation, t_width, interaction_time, gamma))
+        np.transpose(rho_t)
+        Exited_t = NORM - rho_t[:, 0]
+
+        plt.figure(2)
+        plt.plot(t_span[0::100], Exited_t[0::100], t_span[0::100], np.max(Exited_t) * interogation(t_span, interaction_time, t_buffer)[0::100])
+        plt.savefig('fig2.pdf')
+        # plt.draw()
 
         comp_time = time.time() - program_start
         H = int(comp_time / 3600)
         M = int((comp_time - H * 3600) / 60)
         S = int(comp_time - 3600 * H - 60 * M)
 
+        send_email(comp_time, 'fig1.pdf', 'fig2.pdf', 'fig3.pdf')
         print('Computation time: ' + str(H) + ':' + str(M) + ':' + str(S))
         plt.show()
 
