@@ -94,12 +94,9 @@ def erf(x, mu, sigma):
 
 
 @numba.jit()
-def interogation(t, interaction_time, t_buffer):
+def interogation(t, interaction_time, t_buffer=0):
     return np.greater_equal(t, (interaction_time+t_buffer)/1000)  # to convert time units from ns to us
 
-@numba.jit()
-def interogation(t, interaction_time):
-    return np.greater_equal(t, interaction_time/1000)  # to convert time units from ns to us
 
 @numba.jit()
 def buffering(t, interaction_time, t_buffer):

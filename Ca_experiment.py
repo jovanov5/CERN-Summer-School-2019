@@ -43,27 +43,27 @@ if __name__ == '__main__':
     with mp.Pool(mp.cpu_count()) as p:
         print('Freq span: ' + str(1000*freq_span) + 'kHz Number of sampling: ' + str(N_sampling))
         print('N_avr: ' + str(N_avr))
-        plt.figure(1)
-        plt.title('Protocol')
-        plt.xlabel('Time of flight [ns]')
-        plt.ylabel('Frequency [MHz]')
-        plt.plot(t_span*1000,
-                 quadruple_tunable_switch(t_span, t_start, t_separation, t_width, interaction_time, Rabi_Freq_Amp),
-                 label='Rabi Frequency')
-        plt.plot(t_span * 1000, np.ones(shape=t_span.shape) * f_res, label='Resonant detunning')
-        plt.plot(t_span * 1000, 1 * interogation(t_span, interaction_time, t_buffer), label='Interogation time')
-        plt.plot(t_span * 1000, 0.5 * buffering(t_span, interaction_time, t_buffer), label='Buffering time')
-        plt.legend()
-        plt.draw()
+        # plt.figure(1)
+        # plt.title('Protocol')
+        # plt.xlabel('Time of flight [ns]')
+        # plt.ylabel('Frequency [MHz]')
+        # plt.plot(t_span*1000,
+        #          quadruple_tunable_switch(t_span, t_start, t_separation, t_width, interaction_time, Rabi_Freq_Amp),
+        #          label='Rabi Frequency')
+        # plt.plot(t_span * 1000, np.ones(shape=t_span.shape) * f_res, label='Resonant detunning')
+        # plt.plot(t_span * 1000, 1 * interogation(t_span, interaction_time, t_buffer), label='Interogation time')
+        # plt.plot(t_span * 1000, 0.5 * buffering(t_span, interaction_time, t_buffer), label='Buffering time')
+        # plt.legend()
+        # plt.draw()
 
-        rho_t = integrate.odeint(von_neumann_tunable_4_rabi, rho_0, t_span, args=(Rabi_Freq_Amp, f_res, f_0, t_start, t_separation, t_width, interaction_time, gamma))
-        np.transpose(rho_t)
-        Exited_t = NORM - rho_t[:, 0]
+        # rho_t = integrate.odeint(von_neumann_tunable_4_rabi, rho_0, t_span, args=(Rabi_Freq_Amp, f_res, f_0, t_start, t_separation, t_width, interaction_time, gamma))
+        # np.transpose(rho_t)
+        # Exited_t = NORM - rho_t[:, 0]
 
-        plt.figure(2)
-        plt.plot(t_span, Exited_t, t_span, np.max(Exited_t) * interogation(t_span, interaction_time, t_buffer))
-        plt.draw()
-
+        # plt.figure(2)
+        # plt.plot(t_span, Exited_t, t_span, np.max(Exited_t) * interogation(t_span, interaction_time, t_buffer))
+        # plt.draw()
+        #
         Exited_f0 = np.array(list(p.map(freq_scanner_single, f_0_span)))
         p.close()
         Detunning_span = f_0_span-f_res
