@@ -14,7 +14,7 @@ t_buffer = 10000
 t_separation = 8696
 t_start = 10000
 t_width = 3190
-interaction_time = 2*t_start + 3*t_separation 
+interaction_time = 2*t_start + 3*t_separation
 N_T_sampling = 10000000
 t_span = np.linspace(0, interaction_time + t_avr + t_buffer, N_T_sampling)*0.001  # t in ms
 dt = t_span[1]-t_span[0]
@@ -26,7 +26,7 @@ rho_0[0] = NORM
 
 #FREQ SCAN DEF
 freq_span = 0.4
-N_sampling = 500
+N_sampling = 100
 f_0_span = np.linspace(-freq_span, freq_span, N_sampling)
 f_0_span += f_res
 

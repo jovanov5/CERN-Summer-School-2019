@@ -3,7 +3,7 @@ from two_level_complete_header import *
 program_start = time.time()
 
 # FREQUENCY DEFINITIONS (MHz)
-Rabi_Freq_Amp = 0.7*1.75  # Rabi Frequency amp for Mg experiment
+Rabi_Freq_Amp = 10*1.75  # Rabi Frequency amp for Mg experiment
 f_0 = 0  # set the reference
 f_res = 0  # Let's say
 gamma = 375/1000000 # A coef for Mg I 3P1 to 1S0 457 nm
@@ -23,7 +23,7 @@ N_avr = int(t_avr*0.001/dt)
 
 # DEFINING INITIAL STATE !!!! Important !!!
 rho_0 = np.zeros(shape=[3])
-rho_0[0] = 1  # FREE GROUND STATE   
+rho_0[0] = 1  # FREE GROUND STATE
 # rho_0[0] = 1/2*(1+Detune/math.sqrt(Detune**2+Rabi_freq**2))  # EM+ION GROUND STATE
 # rho_0[1] = -1/2*Rabi_freq/math.sqrt(Detune**2+Rabi_freq**2)
 # rho_0[0] = 1/2*(1+Detune**2/(Detune**2+Rabi_freq**2))  # Rabi Oscillating State AVERAGED
@@ -32,11 +32,11 @@ rho_0 = NORM*rho_0  # - NORMALIZATION is UPPED for NUMERICAL -
 
 #FREQ SCAN DEF
 freq_span = 10
-N_sampling = 200
+N_sampling = 50
 f_0_span = np.linspace(0, freq_span, N_sampling)
 f_0_span += f_res
 max_amp_thermal = 40
-amp_thermal_sampling = 50
+amp_thermal_sampling = 300
 amp_thermal_span = np.linspace(-max_amp_thermal, max_amp_thermal, amp_thermal_sampling)
 amp_thermal_span_extended = np.array([i for i in amp_thermal_span for j in f_0_span])
 f_0_span_extended = np.array([j for i in amp_thermal_span for j in f_0_span])
@@ -62,7 +62,7 @@ if __name__ == '__main__':
                  double_tuneable_switch_begin_fixed(t_span, t_start, t_separation, t_width, interaction_time, Rabi_Freq_Amp),
                  label='Rabi Frequency')
         plt.plot(t_span * 1000, f_res - f_0 + single_doppler_ramp(t_span, interaction_time, 40), label='Frequency seen')
-        plt.plot(t_span * 1000, 1 * interogation(t_span, interaction_time), label='Interogation time')
+        plt.plot(t_span * 1000, 1 * interogation(t_span, interaction_time, t_buffer), label='Interogation time')
         plt.plot(t_span * 1000, 0.5 * buffering(t_span, interaction_time, t_buffer), label='Buffering time')
         plt.legend()
         plt.draw()
@@ -72,14 +72,18 @@ if __name__ == '__main__':
         Exited_t = NORM - rho_t[:, 0]
 
         plt.figure(2)
-        plt.plot(t_span, Exited_t, t_span, np.max(Exited_t) * interogation(t_span, interaction_time))
+        plt.plot(t_span, Exited_t, t_span, np.max(Exited_t) * interogation(t_span, interaction_time, t_buffer))
         plt.draw()
-        
+
         Exited_f0_2D = np.array(list(p.starmap(freq_scanner_single, inputs_span)))
         p.close()
-        Exited_f0_2D = np.reshape(Exited_f0_2D, (-1, N_sampling))        
-        Distibution = np.exp(-1/2/(max_amp_thermal/2)**2 * (amp_thermal_span-0)**2)
-        Excited_f0_thermal = np.matmul(Distibution,Exited_f0_2D)        
+        Exited_f0_2D = np.reshape(Exited_f0_2D, (-1, N_sampling))
+        if max_amp_thermal != 0 :
+            Distibution = np.exp(-1/2/(max_amp_thermal/2)**2 * (amp_thermal_span-0)**2)
+        else:
+            Distibution = np.ones(shape= amp_thermal_span.shape)/amp_thermal_span.size
+
+        Excited_f0_thermal = np.matmul(Distibution,Exited_f0_2D)
         Excited_f0_thermal = np.append(np.flip(Excited_f0_thermal[:-1], axis= 0), Excited_f0_thermal)
         Detunning_span = f_0_span-f_res
         temp = - np.flip(Detunning_span[:-1], axis=0)

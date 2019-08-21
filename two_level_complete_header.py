@@ -94,9 +94,12 @@ def erf(x, mu, sigma):
 
 
 @numba.jit()
+def interogation(t, interaction_time, t_buffer):
+    return np.greater_equal(t, (interaction_time+t_buffer)/1000)  # to convert time units from ns to us
+
+@numba.jit()
 def interogation(t, interaction_time):
     return np.greater_equal(t, interaction_time/1000)  # to convert time units from ns to us
-
 
 @numba.jit()
 def buffering(t, interaction_time, t_buffer):
@@ -216,5 +219,3 @@ def doppler_shift(t, t_second_pulse):  # from the graph in the paper, reconstruc
 # @numba.jit(nopython=True)
 # def f(rho, t):
 #     return von_neumann_tuneable(rho, t, rabi_freq, f_res, f_0, t_start, t_separation, t_width, interaction_time, amp)
-
-
