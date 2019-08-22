@@ -54,7 +54,8 @@ def freq_scanner_single(amp_thermal, f_0):
 
 if __name__ == '__main__':
     with mp.Pool(mp.cpu_count()) as p:
-        print('Freq span: ' + str(freq_span) + 'MHz Number of sampling: ' + str(N_sampling)+' Thermal width: '+str(max_amp_thermal)+ 'MHz Number of samplings: '+str(amp_thermal_sampling))
+        start_message = 'Freq span: ' + str(freq_span) + 'MHz Number of sampling: ' + str(N_sampling)+' Thermal width: '+str(max_amp_thermal)+ 'MHz Number of samplings: '+str(amp_thermal_sampling)
+        print(start_message)
         plt.figure(1)
         psam = 100  # plotting sampling skip
         plt.title('Protocol')
@@ -107,7 +108,7 @@ if __name__ == '__main__':
         H = int(comp_time / 3600)
         M = int((comp_time - H * 3600) / 60)
         S = int(comp_time - 3600 * H - 60 * M)
-        send_email(comp_time, 'a.pdf', 'b.pdf', 'c.pdf')
+        send_email(comp_time, 'a.pdf', 'b.pdf', 'c.pdf', start_message)
 
         print('Computation time: ' + str(H) + ':' + str(M) + ':' + str(S))
         plt.show()
