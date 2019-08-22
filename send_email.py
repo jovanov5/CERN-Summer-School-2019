@@ -5,6 +5,30 @@ from email.mime.base import MIMEBase
 from email import encoders
 import os.path
 
+def send_start(sim_name):
+
+    email = 'srvrinformer@gmail.com'
+    password = '&Ab012_8Zp2!'
+    send_to_email = 'jjovanovic996@gmail.com'
+    subject = 'Simulation Completed'
+    message = sim_name + ' has started computing!'
+
+    msg = MIMEMultipart()
+    msg['From'] = email
+    msg['To'] = send_to_email
+    msg['Subject'] = subject
+
+    msg.attach(MIMEText(message, 'plain'))
+
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(email, password)
+    text = msg.as_string()
+    server.sendmail(email, send_to_email, text)
+    server.quit()
+
+    return 0
+
 
 def send_email(comp_time, fig1='', fig2='', fig3='', addmsg=''):
 
