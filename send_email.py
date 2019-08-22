@@ -5,7 +5,7 @@ from email.mime.base import MIMEBase
 from email import encoders
 import os.path
 
-def send_start(sim_name):
+def send_start(sim_name, fig1 ='', fig2 =''):
 
     email = 'srvrinformer@gmail.com'
     password = '&Ab012_8Zp2!'
@@ -19,6 +19,28 @@ def send_start(sim_name):
     msg['Subject'] = subject
 
     msg.attach(MIMEText(message, 'plain'))
+
+    # Setup the attachment
+    file_location = os.path.dirname(os.path.realpath(__file__)) + os.path.sep + fig1
+    filename = os.path.basename(file_location)
+    attachment = open(file_location, "rb")
+    part = MIMEBase('application', 'octet-stream')
+    part.set_payload(attachment.read())
+    encoders.encode_base64(part)
+    part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+    # Attach the attachment to the MIMEMultipart object
+    msg.attach(part)
+
+    # Setup the attachment
+    file_location = os.path.dirname(os.path.realpath(__file__)) + os.path.sep + fig2
+    filename = os.path.basename(file_location)
+    attachment = open(file_location, "rb")
+    part = MIMEBase('application', 'octet-stream')
+    part.set_payload(attachment.read())
+    encoders.encode_base64(part)
+    part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+    # Attach the attachment to the MIMEMultipart object
+    msg.attach(part)
 
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
