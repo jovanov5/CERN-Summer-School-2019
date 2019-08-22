@@ -3,6 +3,8 @@ from send_email import send_email
 
 program_start = time.time()
 
+sim_name = 'Lamd dip'
+
 # FREQUENCY DEFINITIONS (MHz)
 Rabi_Freq_Amp = 1.75  # Rabi Frequency amp for Mg experiment
 f_0 = 0  # set the reference
@@ -54,7 +56,7 @@ def freq_scanner_single(amp_thermal, f_0):
 
 if __name__ == '__main__':
     with mp.Pool(mp.cpu_count()) as p:
-        start_message = 'Freq span: ' + str(freq_span) + 'MHz Number of sampling: ' + str(N_sampling)+' Thermal width: '+str(max_amp_thermal)+ 'MHz Number of samplings: '+str(amp_thermal_sampling) + '.'
+        start_message = sim_name + ': ' +' -freq span: ' + str(freq_span) + 'MHz Number of sampling: ' + str(N_sampling)+' Thermal width: '+str(max_amp_thermal)+ 'MHz Number of samplings: '+str(amp_thermal_sampling) + '.'
         print(start_message)
         plt.figure(1)
         psam = 100  # plotting sampling skip
@@ -80,6 +82,7 @@ if __name__ == '__main__':
         plt.savefig('b.pdf')
         plt.draw()
 
+        send_start(sim_name)
         Exited_f0_2D = np.array(list(p.starmap(freq_scanner_single, inputs_span)))
         p.close()
         Exited_f0_2D = np.reshape(Exited_f0_2D, (-1, N_sampling))
@@ -95,14 +98,16 @@ if __name__ == '__main__':
         Detunning_span = np.append(temp, Detunning_span)
 
         plt.figure(3)
-        plt.title('Dip in background signal vs starting frequency')
+        plt.title('Fluorescence signal')
         plt.xlabel('Starting frequency of the laser [MHz]')
         plt.ylabel('Derivative of the fluorescence signal [AU]')
         # print(N_avr*NORM)
         # print(Exited_f0)
-        plt.plot(Detunning_span, Excited_f0_thermal, 0)
+        plt.plot(Detunning_span, Excited_f0_thermal)
         plt.savefig('c.pdf')
         plt.draw()
+        np.save('Lamb_therm_f', Detunning_span)
+        np.save('Lamb_therm_E', Excited_f0_thermal)
 
         comp_time = time.time() - program_start
         H = int(comp_time / 3600)

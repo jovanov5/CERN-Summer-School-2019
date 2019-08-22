@@ -87,7 +87,7 @@ def von_neumann_tunable_2_doppler(rho, t, rabi_freq_amp, f_res, f_0, t_start, t_
 def von_neumann_tunable_4_doppler(rho, t, rabi_freq_amp, f_res, f_0, t_start, t_separation, t_sep_big, t_width, interaction_time, gamma, amp_thermal):
     delta = f_res - f_0 + single_doppler_ramp(t, interaction_time, amp_thermal) # Detuning in Hz
     delta = delta*2*math.pi   # Detuning from Hz to rad/s
-    rabi_freq =  quadruple_tunable_switch(t, t_start, t_separation, t_width, interaction_time,rabi_ferq_amp, t_sep_big) # COMPLEX !!!
+    rabi_freq =  quadruple_tunable_switch(t, t_start, t_separation, t_width, interaction_time,rabi_freq_amp, t_sep_big) # COMPLEX !!!
     rho_gg = complex(rho[0], 0)
     rho_ge = complex(rho[1], rho[2])
     rho_eg = rho_ge.conjugate()
@@ -174,7 +174,9 @@ def g(x,t_start, t_separation, t_width, t_sep_big):
 
 
 @numba.jit()
-def quadruple_tunable_switch(t, t_start, t_separation, t_width, interaction_time,amp, t_sep_big= 2*t_separation):
+def quadruple_tunable_switch(t, t_start, t_separation, t_width, interaction_time,amp, t_sep_big= -1):
+    if t_sep_big == -1 :
+        t_sep_big = 2*t_separation
     t = 1000*t  # covert us to ns
     return amp*g(t,t_start, t_separation, t_width, t_sep_big)/g(t_start,t_start, t_separation, t_width, t_sep_big)*np.less_equal(t, interaction_time)
 
