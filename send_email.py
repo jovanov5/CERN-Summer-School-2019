@@ -26,7 +26,7 @@ def send_email(comp_time, fig1='', fig2='', fig3=''):
     msg.attach(MIMEText(message, 'plain'))
 
     # Setup the attachment
-    file_location = os.path.dirname(os.path.realpath(__file__))+'\\' + fig1
+    file_location = os.path.dirname(os.path.realpath(__file__)) + os.path.sep + fig1
     filename = os.path.basename(file_location)
     attachment = open(file_location, "rb")
     part = MIMEBase('application', 'octet-stream')
@@ -37,7 +37,7 @@ def send_email(comp_time, fig1='', fig2='', fig3=''):
     msg.attach(part)
 
     # Setup the attachment
-    file_location = os.path.dirname(os.path.realpath(__file__))+'\\' + fig2
+    file_location = os.path.dirname(os.path.realpath(__file__)) + os.path.sep + fig2
     filename = os.path.basename(file_location)
     attachment = open(file_location, "rb")
     part = MIMEBase('application', 'octet-stream')
@@ -48,7 +48,7 @@ def send_email(comp_time, fig1='', fig2='', fig3=''):
     msg.attach(part)
 
     # Setup the attachment
-    file_location = os.path.dirname(os.path.realpath(__file__))+'\\' + fig3
+    file_location = os.path.dirname(os.path.realpath(__file__)) + os.path.sep + fig3
     filename = os.path.basename(file_location)
     attachment = open(file_location, "rb")
     part = MIMEBase('application', 'octet-stream')
