@@ -10,7 +10,7 @@ def send_start(sim_name):
     email = 'srvrinformer@gmail.com'
     password = '&Ab012_8Zp2!'
     send_to_email = 'jjovanovic996@gmail.com'
-    subject = 'Simulation Completed'
+    subject = 'Simulation Started'
     message = sim_name + ' has started computing!'
 
     msg = MIMEMultipart()
