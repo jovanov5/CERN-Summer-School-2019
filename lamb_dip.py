@@ -104,7 +104,7 @@ if __name__ == '__main__':
         # print(N_avr*NORM)
         # print(Exited_f0)
         plt.plot(Detunning_span, Excited_f0_thermal)
-        plt.savefig('c.pdf')
+        plt.savefig('c.pdf') 
         plt.draw()
         np.save('Lamb_therm_f', Detunning_span)
         np.save('Lamb_therm_E', Excited_f0_thermal)
