@@ -32,8 +32,8 @@ rho_0[0] = 1  # FREE GROUND STATE
 rho_0 = NORM*rho_0  # - NORMALIZATION is UPPED for NUMERICAL -
 
 #FREQ SCAN DEF
-freq_span = 0.1
-N_sampling = 50
+freq_span = 1
+N_sampling = 150
 f_0_span = np.linspace(0, freq_span, N_sampling)
 f_0_span += f_res
 max_amp_thermal = 40
@@ -54,7 +54,7 @@ def freq_scanner_single(amp_thermal, f_0):
 
 if __name__ == '__main__':
     with mp.Pool(mp.cpu_count()) as p:
-        start_message = 'Freq span: ' + str(freq_span) + 'MHz Number of sampling: ' + str(N_sampling)+' Thermal width: '+str(max_amp_thermal)+ 'MHz Number of samplings: '+str(amp_thermal_sampling)
+        start_message = 'Freq span: ' + str(freq_span) + 'MHz Number of sampling: ' + str(N_sampling)+' Thermal width: '+str(max_amp_thermal)+ 'MHz Number of samplings: '+str(amp_thermal_sampling) + '.'
         print(start_message)
         plt.figure(1)
         psam = 100  # plotting sampling skip

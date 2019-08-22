@@ -23,7 +23,7 @@ def von_neumann(rho, t, rabi_freq, f_res, f_0, doppler_function, interaction_tim
     r1 = -complex(0, 1)*(rabi_freq/2*rho_eg-rabi_freq/2*rho_ge) + gamma*rho_ee
     r2 = -complex(0, 1)*(-rabi_freq/2*rho_gg+rabi_freq/2*rho_ee-delta*rho_ge) - gamma/2*rho_ge
     return np.array([r1.real, r2.real, r2.imag])
-# Von Neumann's equation of motion
+# Von Neumann's equation of motion .... COMSOL PORFILED DOPPLER SWITCH
 
 
 @numba.jit()
@@ -37,7 +37,7 @@ def von_neumann_tuneable(rho, t, rabi_freq, f_res, f_0, t_start, t_separation, t
     r1 = -complex(0, 1)*(rabi_freq/2*rho_eg-rabi_freq/2*rho_ge) + gamma*rho_ee  # TWO SIGN ERRORS CANCELLED each OTHER
     r2 = -complex(0, 1)*(-rabi_freq/2*rho_gg+rabi_freq/2*rho_ee-delta*rho_ge) - gamma/2*rho_ge  # XD CONVENTION
     return np.array([r1.real, r2.real, r2.imag])
-# Von Neumann's equation of motion
+# Von Neumann's equation of motion ... NON THERMAL DOUBLE SWITCH DOPPLER
 
 @numba.jit()
 def von_neumann_tunable_1_rabi(rho, t, rabi_freq_amp, f_res, f_0, t_start, t_separation, t_width, interaction_time, gamma):
@@ -51,7 +51,7 @@ def von_neumann_tunable_1_rabi(rho, t, rabi_freq_amp, f_res, f_0, t_start, t_sep
     r1 = -complex(0, 1)*(rabi_freq/2*rho_ge - rabi_freq.conjugate()/2*rho_eg) + gamma*rho_ee  # NOW this is inline
     r2 = -complex(0, 1)*(rabi_freq.conjugate()/2*(rho_gg-rho_ee)-delta*rho_ge) - gamma/2*rho_ge  # with Wanstron Conv
     return np.array([r1.real, r2.real, r2.imag])
-# Von Neumann's equation of motion
+# Von Neumann's equation of motion .... BASIC NON THERMAL RABI type (one cross beam)
 
 @numba.jit()
 def von_neumann_tunable_4_rabi(rho, t, rabi_freq_amp, f_res, f_0, t_start, t_separation, t_width, interaction_time, gamma):
@@ -65,7 +65,7 @@ def von_neumann_tunable_4_rabi(rho, t, rabi_freq_amp, f_res, f_0, t_start, t_sep
     r1 = -complex(0, 1)*(rabi_freq/2*rho_ge - rabi_freq.conjugate()/2*rho_eg) + gamma*rho_ee  # NOW this is inline
     r2 = -complex(0, 1)*(rabi_freq.conjugate()/2*(rho_gg-rho_ee)-delta*rho_ge) - gamma/2*rho_ge  # with Wanstron Conv
     return np.array([r1.real, r2.real, r2.imag])
-# Von Neumann's equation of motion
+# Von Neumann's equation of motion .... NON THERMAL RAMSEY x4 (Ca_EXPERIMENT.PY) BASIC EXP REP
 
 
 @numba.jit()
@@ -80,7 +80,23 @@ def von_neumann_tunable_2_doppler(rho, t, rabi_freq_amp, f_res, f_0, t_start, t_
     r1 = -complex(0, 1)*(rabi_freq/2*rho_ge - rabi_freq.conjugate()/2*rho_eg) + gamma*rho_ee  # NOW this is inline
     r2 = -complex(0, 1)*(rabi_freq.conjugate()/2*(rho_gg-rho_ee)-delta*rho_ge) - gamma/2*rho_ge  # with Wanstron Conv
     return np.array([r1.real, r2.real, r2.imag])
-# Von Neumann's equation of motion
+# Von Neumann's equation of motion .... THERMAL RABI (LAMB_DIP.PY)
+
+
+@numba.jit()
+def von_neumann_tunable_4_doppler(rho, t, rabi_freq_amp, f_res, f_0, t_start, t_separation, t_sep_big, t_width, interaction_time, gamma, amp_thermal):
+    delta = f_res - f_0 + single_doppler_ramp(t, interaction_time, amp_thermal) # Detuning in Hz
+    delta = delta*2*math.pi   # Detuning from Hz to rad/s
+    rabi_freq =  quadruple_tunable_switch(t, t_start, t_separation, t_width, interaction_time,rabi_ferq_amp, t_sep_big) # COMPLEX !!!
+    rho_gg = complex(rho[0], 0)
+    rho_ge = complex(rho[1], rho[2])
+    rho_eg = rho_ge.conjugate()
+    rho_ee = NORM - rho_gg
+    r1 = -complex(0, 1)*(rabi_freq/2*rho_ge - rabi_freq.conjugate()/2*rho_eg) + gamma*rho_ee  # NOW this is inline
+    r2 = -complex(0, 1)*(rabi_freq.conjugate()/2*(rho_gg-rho_ee)-delta*rho_ge) - gamma/2*rho_ge  # with Wanstron Conv
+    return np.array([r1.real, r2.real, r2.imag])
+# Von Neumann's equation of motion ... FULL THERMAL Ca EXPERIMENT REP
+
 
 
 @numba.jit()
@@ -144,19 +160,23 @@ def double_tuneable_switch_end_fixed(t, t_start, t_separation, t_width, interact
 
 # HELPER FUNCTIONS for QUADRUPLE SWITCHING f and g
 @numba.jit()
-def f(x,t_start, t_separation, t_width):  # NEED TO INTRODUCE RELATIVE PHASE shifts !!!!!!
-    return G(x, t_start, t_width) + G(x, t_start + t_separation, t_width) + G(x, t_start + 2*t_separation, t_width) + G(x, t_start + 3*t_separation, t_width)
+def f(x,t_start, t_separation, t_width, t_sep_big):  # NEED TO INTRODUCE RELATIVE PHASE shifts !!!!!!
+    t_1 = t_start
+    t_2 = t_start + t_separation
+    t_3 = t_1 + t_sep_big
+    t_4 = t_2 + t_sep_big
+    return G(x, t_1, t_width) + G(x, t_2, t_width) + G(x, t_3, t_width) + G(x, t_4, t_width)
 
 
 @numba.jit()
-def g(x,t_start, t_separation, t_width):
-    return f(x,t_start, t_separation, t_width) - f(0,t_start, t_separation, t_width)
+def g(x,t_start, t_separation, t_width, t_sep_big):
+    return f(x,t_start, t_separation, t_width, t_sep_big) - f(0,t_start, t_separation, t_width, t_sep_big)
 
 
 @numba.jit()
-def quadruple_tunable_switch(t, t_start, t_separation, t_width, interaction_time,amp):
+def quadruple_tunable_switch(t, t_start, t_separation, t_width, interaction_time,amp, t_sep_big= 2*t_separation):
     t = 1000*t  # covert us to ns
-    return amp*g(t,t_start, t_separation, t_width)/g(t_start,t_start, t_separation, t_width)*np.less_equal(t, interaction_time)
+    return amp*g(t,t_start, t_separation, t_width, t_sep_big)/g(t_start,t_start, t_separation, t_width, t_sep_big)*np.less_equal(t, interaction_time)
 
 
 # # Interpolation of COMSOL data
