@@ -5,13 +5,13 @@ from email.mime.base import MIMEBase
 from email import encoders
 import os.path
 
-def send_start(sim_name = 'Some Simulation', fig1 ='', fig2 =''):
+def send_start(sim_name = 'Some Simulation', fig1 ='', fig2 ='', addmsg=''):
 
     email = 'srvrinformer@gmail.com'
     password = '&Ab012_8Zp2!'
     send_to_email = 'jjovanovic996@gmail.com'
     subject = sim_name
-    message = sim_name + ' has started computing!'
+    message = sim_name + ' has started computing! ' + addmsg
 
     msg = MIMEMultipart()
     msg['From'] = email

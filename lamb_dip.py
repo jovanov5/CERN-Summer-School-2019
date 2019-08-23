@@ -7,7 +7,7 @@ program_start = time.time()
 sim_name = 'Lamd dip'
 
 # FREQUENCY DEFINITIONS (MHz)
-Rabi_Freq_Amp = 1.75  # Rabi Frequency amp for Mg experiment
+Rabi_Freq_Amp = 5*1.75  # Rabi Frequency amp for Mg experiment
 f_0 = 0  # set the reference
 f_res = 0  # Let's say
 gamma = 375/1000000 # A coef for Mg I 3P1 to 1S0 457 nm
@@ -36,11 +36,11 @@ rho_0 = NORM*rho_0  # - NORMALIZATION is UPPED for NUMERICAL -
 
 #FREQ SCAN DEF
 freq_span = 0.5
-N_sampling = 50
+N_sampling = 20
 f_0_span = np.linspace(0, freq_span, N_sampling)
 f_0_span += f_res
-max_amp_thermal = 40
-amp_thermal_sampling = 300
+max_amp_thermal = 20
+amp_thermal_sampling = 600
 amp_thermal_span = np.linspace(-max_amp_thermal, max_amp_thermal, amp_thermal_sampling)
 amp_thermal_span_extended = np.array([i for i in amp_thermal_span for j in f_0_span])
 f_0_span_extended = np.array([j for i in amp_thermal_span for j in f_0_span])
@@ -83,7 +83,7 @@ if __name__ == '__main__':
         plt.savefig('b.pdf')
         plt.draw()
 
-        send_start(sim_name, 'a.pdf', 'b.pdf')
+        send_start(sim_name, 'a.pdf', 'b.pdf', start_message)
         Exited_f0_2D = np.array(list(p.starmap(freq_scanner_single, inputs_span)))
         p.close()
         Exited_f0_2D = np.reshape(Exited_f0_2D, (-1, N_sampling))

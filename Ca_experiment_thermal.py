@@ -84,7 +84,7 @@ if __name__ == '__main__':
         plt.savefig('b.pdf')
         plt.draw()
 
-        send_start(sim_name, 'a.pdf', 'b.pdf')
+        send_start(sim_name, 'a.pdf', 'b.pdf', start_message)
         Exited_f0_2D = np.array(list(p.starmap(freq_scanner_single, inputs_span)))
         p.close()
         Exited_f0_2D = np.reshape(Exited_f0_2D, (-1, N_sampling))
