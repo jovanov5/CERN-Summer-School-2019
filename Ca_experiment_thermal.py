@@ -115,7 +115,7 @@ if __name__ == '__main__':
         H = int(comp_time / 3600)
         M = int((comp_time - H * 3600) / 60)
         S = int(comp_time - 3600 * H - 60 * M)
-        send_email(comp_time, 'a.pdf', 'b.pdf', 'c.pdf', start_message)
+        send_email(comp_time, 'a.pdf', 'b.pdf', 'c.pdf', start_message, sim_name)
 
         print('Computation time: ' + str(H) + ':' + str(M) + ':' + str(S))
         plt.show()

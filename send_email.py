@@ -5,12 +5,12 @@ from email.mime.base import MIMEBase
 from email import encoders
 import os.path
 
-def send_start(sim_name, fig1 ='', fig2 =''):
+def send_start(sim_name = 'Some Simulation', fig1 ='', fig2 =''):
 
     email = 'srvrinformer@gmail.com'
     password = '&Ab012_8Zp2!'
     send_to_email = 'jjovanovic996@gmail.com'
-    subject = 'Simulation Started'
+    subject = sim_name
     message = sim_name + ' has started computing!'
 
     msg = MIMEMultipart()
@@ -52,7 +52,7 @@ def send_start(sim_name, fig1 ='', fig2 =''):
     return 0
 
 
-def send_email(comp_time, fig1='', fig2='', fig3='', addmsg=''):
+def send_email(comp_time, fig1='', fig2='', fig3='', addmsg='', sim_name='Some Simulation'):
 
     H = int(comp_time / 3600)
     M = int((comp_time - H * 3600) / 60)
@@ -61,8 +61,8 @@ def send_email(comp_time, fig1='', fig2='', fig3='', addmsg=''):
     email = 'srvrinformer@gmail.com'
     password = '&Ab012_8Zp2!'
     send_to_email = 'jjovanovic996@gmail.com'
-    subject = 'Simulation Completed'
-    message = addmsg + ' Time taken: ' + str(H) + ':' + str(M) + ':' + str(S)
+    subject = sim_name
+    message = 'Simulation Completed: ' + addmsg + ' Time taken: ' + str(H) + ':' + str(M) + ':' + str(S)
 
     msg = MIMEMultipart()
     msg['From'] = email
