@@ -36,12 +36,12 @@ rho_0[0] = 1  # FREE GROUND STATE
 rho_0 = NORM*rho_0  # - NORMALIZATION is UPPED for NUMERICAL -
 
 #FREQ SCAN DEF
-freq_span = 1
-N_sampling = 150
+freq_span = 0.2
+N_sampling = 40
 f_0_span = np.linspace(0, freq_span, N_sampling)
 f_0_span += f_res
-max_amp_thermal = 40
-amp_thermal_sampling = 100
+max_amp_thermal = 0
+amp_thermal_sampling = 1
 amp_thermal_span = np.linspace(-max_amp_thermal, max_amp_thermal, amp_thermal_sampling)
 amp_thermal_span_extended = np.array([i for i in amp_thermal_span for j in f_0_span])
 f_0_span_extended = np.array([j for i in amp_thermal_span for j in f_0_span])
@@ -99,6 +99,9 @@ if __name__ == '__main__':
         temp = - np.flip(Detunning_span[:-1], axis=0)
         Detunning_span = np.append(temp, Detunning_span)
 
+        np.save('Ca_therm_f', Detunning_span)
+        np.save('Ca_therm_E', Excited_f0_thermal)
+
         plt.figure(3)
         plt.title('Fluorescence signal')
         plt.xlabel('Starting frequency of the laser [MHz]')
@@ -108,14 +111,12 @@ if __name__ == '__main__':
         plt.plot(Detunning_span, Excited_f0_thermal)
         plt.savefig('c.pdf')
         plt.draw()
-        np.save('Ca_therm_f', Detunning_span)
-        np.save('Ca_therm_E', Excited_f0_thermal)
 
         comp_time = time.time() - program_start
         H = int(comp_time / 3600)
         M = int((comp_time - H * 3600) / 60)
         S = int(comp_time - 3600 * H - 60 * M)
-        send_email(comp_time, 'a.pdf', 'b.pdf', 'c.pdf', start_message, sim_name)
+        send_email(comp_time, 'a.pdf', 'b.pdf', 'c.pdf', start_message, sim_name, 'Ca_therm_f.npy')
 
         print('Computation time: ' + str(H) + ':' + str(M) + ':' + str(S))
         plt.show()

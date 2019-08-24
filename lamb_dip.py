@@ -36,11 +36,11 @@ rho_0 = NORM*rho_0  # - NORMALIZATION is UPPED for NUMERICAL -
 
 #FREQ SCAN DEF
 freq_span = 0.5
-N_sampling = 20
+N_sampling = 40
 f_0_span = np.linspace(0, freq_span, N_sampling)
 f_0_span += f_res
-max_amp_thermal = 20
-amp_thermal_sampling = 600
+max_amp_thermal = 0
+amp_thermal_sampling = 1
 amp_thermal_span = np.linspace(-max_amp_thermal, max_amp_thermal, amp_thermal_sampling)
 amp_thermal_span_extended = np.array([i for i in amp_thermal_span for j in f_0_span])
 f_0_span_extended = np.array([j for i in amp_thermal_span for j in f_0_span])
