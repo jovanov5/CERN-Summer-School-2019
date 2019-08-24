@@ -20,27 +20,29 @@ def send_start(sim_name = 'Some Simulation', fig1 ='', fig2 ='', addmsg=''):
 
     msg.attach(MIMEText(message, 'plain'))
 
-    # Setup the attachment
-    file_location = os.path.dirname(os.path.realpath(__file__)) + os.path.sep + fig1
-    filename = os.path.basename(file_location)
-    attachment = open(file_location, "rb")
-    part = MIMEBase('application', 'octet-stream')
-    part.set_payload(attachment.read())
-    encoders.encode_base64(part)
-    part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
-    # Attach the attachment to the MIMEMultipart object
-    msg.attach(part)
+    if fig1 != '' :
+        # Setup the attachment
+        file_location = os.path.dirname(os.path.realpath(__file__)) + os.path.sep + fig1
+        filename = os.path.basename(file_location)
+        attachment = open(file_location, "rb")
+        part = MIMEBase('application', 'octet-stream')
+        part.set_payload(attachment.read())
+        encoders.encode_base64(part)
+        part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+        # Attach the attachment to the MIMEMultipart object
+        msg.attach(part)
 
-    # Setup the attachment
-    file_location = os.path.dirname(os.path.realpath(__file__)) + os.path.sep + fig2
-    filename = os.path.basename(file_location)
-    attachment = open(file_location, "rb")
-    part = MIMEBase('application', 'octet-stream')
-    part.set_payload(attachment.read())
-    encoders.encode_base64(part)
-    part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
-    # Attach the attachment to the MIMEMultipart object
-    msg.attach(part)
+    if fig2 != '' :
+        # Setup the attachment
+        file_location = os.path.dirname(os.path.realpath(__file__)) + os.path.sep + fig2
+        filename = os.path.basename(file_location)
+        attachment = open(file_location, "rb")
+        part = MIMEBase('application', 'octet-stream')
+        part.set_payload(attachment.read())
+        encoders.encode_base64(part)
+        part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+        # Attach the attachment to the MIMEMultipart object
+        msg.attach(part)
 
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
@@ -71,60 +73,66 @@ def send_email(comp_time, fig1='', fig2='', fig3='', addmsg='', sim_name='Some S
 
     msg.attach(MIMEText(message, 'plain'))
 
-    # Setup the attachment
-    file_location = os.path.dirname(os.path.realpath(__file__)) + os.path.sep + fig1
-    filename = os.path.basename(file_location)
-    attachment = open(file_location, "rb")
-    part = MIMEBase('application', 'octet-stream')
-    part.set_payload(attachment.read())
-    encoders.encode_base64(part)
-    part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
-    # Attach the attachment to the MIMEMultipart object
-    msg.attach(part)
 
-    # Setup the attachment
-    file_location = os.path.dirname(os.path.realpath(__file__)) + os.path.sep + fig2
-    filename = os.path.basename(file_location)
-    attachment = open(file_location, "rb")
-    part = MIMEBase('application', 'octet-stream')
-    part.set_payload(attachment.read())
-    encoders.encode_base64(part)
-    part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
-    # Attach the attachment to the MIMEMultipart object
-    msg.attach(part)
+    if fig1 != '' :
+        # Setup the attachment
+        file_location = os.path.dirname(os.path.realpath(__file__)) + os.path.sep + fig1
+        filename = os.path.basename(file_location)
+        attachment = open(file_location, "rb")
+        part = MIMEBase('application', 'octet-stream')
+        part.set_payload(attachment.read())
+        encoders.encode_base64(part)
+        part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+        # Attach the attachment to the MIMEMultipart object
+        msg.attach(part)
 
-    # Setup the attachment
-    file_location = os.path.dirname(os.path.realpath(__file__)) + os.path.sep + fig3
-    filename = os.path.basename(file_location)
-    attachment = open(file_location, "rb")
-    part = MIMEBase('application', 'octet-stream')
-    part.set_payload(attachment.read())
-    encoders.encode_base64(part)
-    part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
-    # Attach the attachment to the MIMEMultipart object
-    msg.attach(part)
+    if fig2 != '' :
+        # Setup the attachment
+        file_location = os.path.dirname(os.path.realpath(__file__)) + os.path.sep + fig2
+        filename = os.path.basename(file_location)
+        attachment = open(file_location, "rb")
+        part = MIMEBase('application', 'octet-stream')
+        part.set_payload(attachment.read())
+        encoders.encode_base64(part)
+        part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+        # Attach the attachment to the MIMEMultipart object
+        msg.attach(part)
 
-    # Setup the attachment
-    file_location = os.path.dirname(os.path.realpath(__file__)) + os.path.sep + data
-    filename = os.path.basename(file_location)
-    attachment = open(file_location, "rb")
-    part = MIMEBase('application', 'octet-stream')
-    part.set_payload(attachment.read())
-    encoders.encode_base64(part)
-    part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
-    # Attach the attachment to the MIMEMultipart object
-    msg.attach(part)
+    if fig3 != '' :
+        # Setup the attachment
+        file_location = os.path.dirname(os.path.realpath(__file__)) + os.path.sep + fig3
+        filename = os.path.basename(file_location)
+        attachment = open(file_location, "rb")
+        part = MIMEBase('application', 'octet-stream')
+        part.set_payload(attachment.read())
+        encoders.encode_base64(part)
+        part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+        # Attach the attachment to the MIMEMultipart object
+        msg.attach(part)
 
-    # Setup the attachment
-    file_location = os.path.dirname(os.path.realpath(__file__)) + os.path.sep + data_sup
-    filename = os.path.basename(file_location)
-    attachment = open(file_location, "rb")
-    part = MIMEBase('application', 'octet-stream')
-    part.set_payload(attachment.read())
-    encoders.encode_base64(part)
-    part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
-    # Attach the attachment to the MIMEMultipart object
-    msg.attach(part)
+    if data != '' :
+        # Setup the attachment
+        file_location = os.path.dirname(os.path.realpath(__file__)) + os.path.sep + data
+        filename = os.path.basename(file_location)
+        attachment = open(file_location, "rb")
+        part = MIMEBase('application', 'octet-stream')
+        part.set_payload(attachment.read())
+        encoders.encode_base64(part)
+        part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+        # Attach the attachment to the MIMEMultipart object
+        msg.attach(part)
+
+    if data_sup != '' :
+        # Setup the attachment
+        file_location = os.path.dirname(os.path.realpath(__file__)) + os.path.sep + data_sup
+        filename = os.path.basename(file_location)
+        attachment = open(file_location, "rb")
+        part = MIMEBase('application', 'octet-stream')
+        part.set_payload(attachment.read())
+        encoders.encode_base64(part)
+        part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+        # Attach the attachment to the MIMEMultipart object
+        msg.attach(part)
 
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
