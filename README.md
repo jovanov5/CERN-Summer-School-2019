@@ -16,3 +16,11 @@ The Scripts are:
   - has two emailing functions send_email to send an email to the user when it's finished
   - send_start to email the user when it started
   - both having capability to send a number of attacjments (.dfs, .py, .npy, .txt)
+- all other scripts:
+  -tailor-made for emulating given experimental setups or to explore and optimize other
+- two miscellanies scripts:
+  - MATLAB_like_init
+  - script_1
+- Mathematica/ code for analytical treatment of doppler switching 
+- COSMOL/ data and constructions
+- plots/
