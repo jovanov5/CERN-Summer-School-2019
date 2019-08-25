@@ -10,3 +10,4 @@ backups/
 Report_OLD/
 Report/
 __pycache__/
+*.swp
