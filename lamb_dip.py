@@ -93,9 +93,9 @@ if __name__ == '__main__':
             Distibution = np.ones(shape= amp_thermal_span.shape)/amp_thermal_span.size
 
         Excited_f0_thermal = np.matmul(Distibution,Exited_f0_2D)
-        Excited_f0_thermal = np.append(np.flip(Excited_f0_thermal[:-1], axis= 0), Excited_f0_thermal)
+        Excited_f0_thermal = np.append(np.flip(Excited_f0_thermal[1:], axis= 0), Excited_f0_thermal)
         Detunning_span = f_0_span-f_res
-        temp = - np.flip(Detunning_span[:-1], axis=0)
+        temp = - np.flip(Detunning_span[1:], axis=0)
         Detunning_span = np.append(temp, Detunning_span)
 
         plt.figure(3)
