@@ -9,6 +9,10 @@ The core feature of this is solving the two level system (toy model) coupled to 
 The Scripts are:
 
 - two_level_complete_header:
-  - have Bloch equations (von_neumann* functions) for different configurations
+  - has Bloch equations (von_neumann* functions) for different configurations
   - helper functions like pulsing and ramping used in both frequency definitions (detunning variables) and power definitions (rabi_freq* variables)
   - comsol_doppler_shift which can interpolate the functions form from given data in the form of .txt file
+- send_email:
+  - has two emailing functions send_email to send an email to the user when it's finished
+  - send_start to email the user when it started
+  - both having capability to send a number of attacjments (.dfs, .py, .npy, .txt)
