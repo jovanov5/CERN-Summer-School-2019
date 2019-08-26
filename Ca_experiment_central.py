@@ -40,7 +40,7 @@ freq_span = 0.15
 N_sampling = 100
 f_0_span = np.linspace(0, freq_span, N_sampling)
 f_0_span += f_res
-max_amp_width = 20
+thermal_width = 20
 max_amp_thermal = (freq_span+Rabi_Freq_Amp)*1.5
 amp_thermal_sampling = 50
 amp_thermal_span = np.linspace(-max_amp_thermal, max_amp_thermal, amp_thermal_sampling)
@@ -59,7 +59,7 @@ def freq_scanner_single(amp_thermal, f_0):
 
 if __name__ == '__main__':
     with mp.Pool(mp.cpu_count()) as p:
-        start_message = sim_name + ': ' +' -freq span: ' + str(freq_span) + 'MHz Number of sampling: ' + str(N_sampling)+' Thermal width: '+str(max_amp_thermal)+ 'MHz Number of samplings: '+str(amp_thermal_sampling) + '.'
+        start_message = sim_name + ': ' +' -freq span: ' + str(freq_span) + 'MHz Number of sampling: ' + str(N_sampling)+' Thermal width: '+str(thermal_width)+'('+str(max_amp_thermal)+')'+ 'MHz Number of samplings: '+str(amp_thermal_sampling) + '.'
         print(start_message)
         plt.figure(1)
         psam = 100  # plotting sampling skip
@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
         # THERMAL EFFECTS
         if max_amp_thermal != 0 :
-            Distibution = np.exp(-1/2/(max_amp_thermal)**2 * (amp_thermal_span-0)**2)
+            Distibution = np.exp(-1/2/(thermal_width)**2 * (amp_thermal_span-0)**2)
         else:
             Distibution = np.ones(shape= amp_thermal_span.shape)/amp_thermal_span.size
         Excited_f0_thermal = np.matmul(Distibution,Exited_f0_2D)
