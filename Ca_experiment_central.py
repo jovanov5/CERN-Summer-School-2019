@@ -1,6 +1,7 @@
 from two_level_complete_header import *
 from send_email import send_email
 from send_email import send_start
+import math.pi
 
 program_start = time.time()
 
@@ -21,7 +22,7 @@ t_separation = 8696
 t_sep_big = 2*(t_start+t_separation/2)
 t_width = 3200
 interaction_time = 2*t_sep_big
-N_T_sampling = 10000000
+N_T_sampling = 1000000
 t_span = np.linspace(0, interaction_time + t_buffer + t_avr, N_T_sampling)*0.001  # t in ms
 dt = t_span[1]-t_span[0]
 N_avr = int(t_avr*0.001/dt)
@@ -41,7 +42,7 @@ N_sampling = 100
 f_0_span = np.linspace(0, freq_span, N_sampling)
 f_0_span += f_res
 thermal_width = 20
-max_amp_thermal = (freq_span+Rabi_Freq_Amp)*1.5
+max_amp_thermal = (freq_span+Rabi_Freq_Amp/2/math.pi)*1.5
 amp_thermal_sampling = 50
 amp_thermal_span = np.linspace(-max_amp_thermal, max_amp_thermal, amp_thermal_sampling)
 amp_thermal_span_extended = np.array([i for i in amp_thermal_span for j in f_0_span])
