@@ -1,11 +1,11 @@
 from two_level_complete_header import *
 from send_email import send_email
 from send_email import send_start
-from scipy.interpolate import InterpolatedUnivariateSpline
+from scipy.interpolate.interpolate import interp2d
 
 program_start = time.time()
 
-sim_name = 'Ca Experiment Thermal with Interpolation'  # Intepolate singal over thermal distibution
+sim_name = 'Ca Experiment Thermal Central with Interpolation'  # Intepolate singal over thermal distibution
 
 # FREQUENCY DEFINITIONS (MHz)
 Rabi_Freq_Amp = 1.75  # Rabi Frequency amp for Mg experiment
@@ -38,12 +38,17 @@ rho_0 = NORM*rho_0  # - NORMALIZATION is UPPED for NUMERICAL -
 
 #FREQ SCAN DEF
 freq_span = 0.15
-N_sampling = 100
+N_sampling = 50
 f_0_span = np.linspace(0, freq_span, N_sampling)
 f_0_span += f_res
-max_amp_thermal = 20
-amp_thermal_sampling = 100
+thermal_width = 20
+max_amp_thermal = (freq_span+Rabi_Freq_Amp/2/math.pi)*3.5
+amp_thermal_sampling = 25
+# amp_thermal_sampling_resolution = Rabi_Freq_Amp/10
 amp_thermal_span = np.linspace(-max_amp_thermal, max_amp_thermal, amp_thermal_sampling)
+# amp_thermal_span = np.arrange(-max_amp_thermal, max_amp_thermal, amp_thermal_sampling_resolution)
+# OPTION to pass it to the tan(x) to get finer resoltuion near zero if needed!!!!
+# PROBLEM with that is that each point is then weigther differently in the Distribution function *1/dtandx
 amp_thermal_span_extended = np.array([i for i in amp_thermal_span for j in f_0_span])
 f_0_span_extended = np.array([j for i in amp_thermal_span for j in f_0_span])
 inputs_span = list(zip(amp_thermal_span_extended, f_0_span_extended))
@@ -90,20 +95,21 @@ if __name__ == '__main__':
         p.close()
         Exited_f0_2D = np.reshape(Exited_f0_2D, (-1, N_sampling))
 
-
-        # Interpolation part !!!!
-        amp_thermal_sampling_int = 1000  # 10x more dense to interpoolate (assume Signal(f, f_therm) is smoth in f_therm)
-        amp_thermal_span_int = np.linspace(-max_amp_thermal, max_amp_thermal, amp_thermal_sampling_int)  # to be interpolated
-        Exited_f0_2D_int = np.empty(shape=(N_sampling, amp_thermal_sampling_int))
-        for i in range(N_sampling):
-            f_helper = InterpolatedUnivariateSpline(amp_thermal, Excited_f0_thermal[i,:])
-            Exited_f0_2D_int[i,:] = np.array(list(map(f_helper,amp_thermal_span_int)))
-        if max_amp_thermal != 0 :
-            Distibution = np.exp(-1/2/(max_amp_thermal/2)**2 * (amp_thermal_span_int-0)**2)
+        # Interpolation part !!!
+        f = interp2d(f_0_span, amp_thermal_span, Exited_f0_2D, kind= 'cubic')
+        N_sampling_new = 2*N_sampling
+        amp_thermal_sampling_new = 4*amp_thermal_sampling
+        amp_thermal_span = np.linspace(-max_amp_thermal, max_amp_thermal, amp_thermal_sampling_new)
+        f_0_span = np.linspace(0, freq_span, N_sampling_new)
+        Exited_f0_2D = f(f_0_span, amp_thermal_span)
+        # THERMAL EFFECTS
+        if thermal_width != 0 :
+            Distibution = np.exp(-1/2/(thermal_width)**2 * (amp_thermal_span-0)**2)
         else:
-            Distibution = np.ones(shape= amp_thermal_span_int.shape)/amp_thermal_span_int.size
-        Excited_f0_thermal = np.matmul(Distibution,Exited_f0_2D_int)
-        # END of thermal effects
+            Distibution = np.ones(shape= amp_thermal_span.shape)/amp_thermal_span.size
+        Excited_f0_thermal = np.matmul(Distibution,Exited_f0_2D)
+        # END of THERMAL Effects
+
 
         Excited_f0_thermal = np.append(np.flip(Excited_f0_thermal[1:], axis= 0), Excited_f0_thermal)
         Detunning_span = f_0_span-f_res
