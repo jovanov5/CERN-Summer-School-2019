@@ -1,7 +1,7 @@
 from two_level_complete_header import *
 from send_email import send_email
 from send_email import send_start
-import math.pi
+import math
 
 program_start = time.time()
 
@@ -42,7 +42,7 @@ N_sampling = 100
 f_0_span = np.linspace(0, freq_span, N_sampling)
 f_0_span += f_res
 thermal_width = 20
-max_amp_thermal = (freq_span+Rabi_Freq_Amp/2/math.pi)*1.5
+max_amp_thermal = (freq_span+Rabi_Freq_Amp/2/math.pi)*3.5
 amp_thermal_sampling = 50
 amp_thermal_span = np.linspace(-max_amp_thermal, max_amp_thermal, amp_thermal_sampling)
 amp_thermal_span_extended = np.array([i for i in amp_thermal_span for j in f_0_span])
