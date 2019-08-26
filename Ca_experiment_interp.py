@@ -64,7 +64,7 @@ def freq_scanner_single(amp_thermal, f_0):
 
 if __name__ == '__main__':
     with mp.Pool(mp.cpu_count()) as p:
-        start_message = sim_name + ': ' +' -freq span: ' + str(freq_span) + 'MHz Number of sampling: ' + str(N_sampling)+' Thermal width: '+str(max_amp_thermal)+ 'MHz Number of samplings: '+str(amp_thermal_sampling) + '.'
+        start_message = sim_name + ': ' +' -freq span: ' + str(freq_span) + 'MHz Number of sampling: ' + str(N_sampling)+' Thermal width: '+str(thermal_width)+'('+str(max_amp_thermal)+')'+ 'MHz Number of samplings: '+str(amp_thermal_sampling) + '.'
         print(start_message)
         plt.figure(1)
         psam = 100  # plotting sampling skip
