@@ -8,7 +8,6 @@ import math
 import scipy.optimize as opt
 import time
 import multiprocessing as mp
-from scipy.interpolate import InterpolatedUnivariateSpline
 from itertools import repeat
 
 
@@ -84,7 +83,6 @@ plt.figure(6)
 idc = np.arange(0,N_sampling,1)
 plt.plot(t_interaction_span,np.real(LowFT))
 
-plt.show()
 
 Exited_t_interaction -= np.real(LowFT)
 best_fit_osc, best_fit_osc_cov = opt.curve_fit(fitting_osc_decay, t_interaction_span, Exited_t_interaction, p0=[905, 1, 3e6, 0], maxfev=10000)  # fitting the estimated error results
@@ -94,7 +92,7 @@ print(*best_fit_osc)
 t_interaction_f = np.linspace(t_interaction_min,t_interaction_max, 10*N_sampling)
 plt.figure(1)
 plt.title('Fluorescence signal vs separation')
-plt.xlabel('Separation [ns]')
+plt.xlabel('Separation [ms]')
 plt.ylabel('Fluorescence signal [AU]')
 plt.plot(t_interaction_span, Exited_t_interaction, 'b-')
 plt.plot(t_interaction_f, fitting_osc_decay(t_interaction_f, *best_fit_osc), 'r-')
@@ -117,3 +115,4 @@ plt.figure(2)
 plt.plot([Gen_Rabi, Gen_Rabi],[-0, 1],'k', label='Generalized Rabi')
 plt.draw()
 
+plt.show()
