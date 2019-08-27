@@ -44,7 +44,13 @@ f_0_span += f_res
 thermal_width = 20
 max_amp_thermal = (freq_span+Rabi_Freq_Amp/2/math.pi)*3.5
 amp_thermal_sampling = 25
-# amp_thermal_sampling_resolution = Rabi_Freq_Amp/10
+# --- amp_thermal_sampling_resolution = Rabi_Freq_Amp/10
+# --- amp_thermal_span = np.arrange(-max_amp_thermal, max_amp_thermal, amp_thermal_sampling_resolution)
+# uni = np.linspace(-math.pi*0.5, math.pi*0.5, amp_thermal_sampling) }}}
+# bunching_factor = 1                                                }}}
+# centr = np.tan(uni)/bunching_factor                                }}}  To make sampling finer around 0 (didn't work)
+# centr = centr/np.max(centr)                                        }}}
+# amp_thermal_span = max_amp_thermal*centr                           }}}
 amp_thermal_span = np.linspace(-max_amp_thermal, max_amp_thermal, amp_thermal_sampling)
 # amp_thermal_span = np.arrange(-max_amp_thermal, max_amp_thermal, amp_thermal_sampling_resolution)
 # OPTION to pass it to the tan(x) to get finer resoltuion near zero if needed!!!!
