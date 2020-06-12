@@ -5,7 +5,7 @@ program_start = time.time()
 # FREQUENCY DEFINITIONS
 Rabi_freq = 100  # Rabi frequency in MHz 62 real life estimate
 f_0 = 0  # set the reference
-f_res = 1350  # Let's say
+f_res = 800  # Let's say
 gamma = 111  # inverse lifetime in Mhz
 
 # TIME DEFINITIONS
@@ -32,11 +32,11 @@ plt.show()
 
 
 rho_0 = np.zeros(shape=[3])
-rho_0[0] = 1
+rho_0[0] = NORM
 rho_t = integrate.odeint(von_neumann, rho_0, t_span, args=(Rabi_freq, f_res, f_0, comsol_doppler_shift,
                                                            interaction_time, gamma))
 np.transpose(rho_t)
-Exited_t = 1 - rho_t[:, 0]
+Exited_t = NORM - rho_t[:, 0]
 
 plt.figure(2)
 plt.plot(t_span, Exited_t, t_span, np.max(Exited_t)*interogation(t_span, interaction_time))
@@ -61,7 +61,7 @@ def freq_scanner_single(f_0):
     rho_t = integrate.odeint(von_neumann, rho_0, t_span, args=(Rabi_freq, f_res, f_0, comsol_doppler_shift,
                                                                interaction_time, gamma))
     np.transpose(rho_t)
-    Exited_t = 1 - rho_t[:, 0]
+    Exited_t = NORM - rho_t[:, 0]
     return np.mean(Exited_t[-N_avr:])
 
 
@@ -93,7 +93,7 @@ plt.figure(5)
 plt.title('Fluorescence signal vs starting frequency')
 plt.xlabel('Starting frequency of the laser [MHz]')
 plt.ylabel('Fluorescence signal convolved with the spectrum[AU]')
-plt.plot(f_0_span, Exited_f0_con)
+plt.plot(f_0_span, (Exited_f0_con))
 plt.show()
 
 Df_0 = f_0_span[1]-f_0_span[0]

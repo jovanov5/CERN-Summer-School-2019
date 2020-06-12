@@ -181,20 +181,20 @@ def quadruple_tunable_switch(t, t_start, t_separation, t_width, interaction_time
     return amp*g(t,t_start, t_separation, t_width, t_sep_big)/g(t_start,t_start, t_separation, t_width, t_sep_big)*np.less_equal(t, interaction_time)
 
 
-# # Interpolation of COMSOL data
-# potential_plot = np.loadtxt("input.txt")  # COMSOL DATA for Dopler Shifts
-# x = potential_plot[:, 0]   # spacial must be converted in the COMSOL Shift function
-# x_max = np.max(x)
-# v = potential_plot[:, 1]
-# v_unit_COMSOL = (v-v[0])/np.max(v)
-# F_v = InterpolatedUnivariateSpline(x, v_unit_COMSOL, k=2)
+# Interpolation of COMSOL data
+potential_plot = np.loadtxt("input.txt")  # COMSOL DATA for Dopler Shifts
+x = potential_plot[:, 0]   # spacial must be converted in the COMSOL Shift function
+x_max = np.max(x)
+v = potential_plot[:, 1]
+v_unit_COMSOL = (v-v[0])/np.max(v)
+F_v = InterpolatedUnivariateSpline(x, v_unit_COMSOL, k=2)
 
 
-# def comsol_doppler_shift(t, interaction_time):
-#     t = 1000*t  # conversion
-#     x_COMSOL = t * x_max / interaction_time
-#     amp = 2560*3/4
-#     return amp * np.less_equal(t, interaction_time) * F_v(x_COMSOL)
+def comsol_doppler_shift(t, interaction_time):
+    t = 1000*t  # conversion
+    x_COMSOL = t * x_max / interaction_time
+    amp = 2560*3/4 * 0.75
+    return amp * np.less_equal(t, interaction_time) * F_v(x_COMSOL)
 
 @numba.jit()
 def doppler_shift(t, t_second_pulse):  # from the graph in the paper, reconstruction of DS, obsolete
