@@ -7,7 +7,7 @@ from backups.two_level_complete_header_backup import *
 program_start = time.time()
 
 # SEPARATION TIME INTERVALS & FREQUENCY DOMAIN
-t_separation_max = 100  # PARAMETERS OF THE TIME SCAN (ns) separation
+t_separation_max = 1000  # PARAMETERS OF THE TIME SCAN (ns) separation
 t_separation_min = 5
 N_sampling = 100  # PARAMETERS OF THE TIME SCAN (ns) separation
 t_separation_span = np.linspace(t_separation_min, t_separation_max, N_sampling)
@@ -24,7 +24,7 @@ amp = 1500  # /1.1968268412*2  # Doppler switch amplitude in MHz
 # TIME DEFINITIONS in ns
 dt_pref = 1e-5  # certain prefferable time step for my integrator in ms
 t_start = 2
-t_separation = 10
+t_separation = t_separation_max/2
 t_width = 0.5
 t_buffer = 400
 interaction_time = 2*t_start+t_separation_max + t_buffer
@@ -49,7 +49,7 @@ def time_scanner(t_separation_span):
         rho_t = integrate.odeint(von_neumann_tuneable, rho_0, t_span, args=(Rabi_freq, f_res, f_0, t_start, t_separation, t_width, interaction_time, amp, gamma))
         # rho_t = runge_kutta(f, rho_0, t_span)
         np.transpose(rho_t)
-        Exited_t = 1 - rho_t[:, 0]
+        Exited_t = NORM - rho_t[:, 0]
         dt = t_span[0] - t_span[1]
         N_avr = int(t_avr * 0.001 / dt)
         Exited_t_interaction[index] += np.mean(Exited_t[-N_avr:])
@@ -66,7 +66,7 @@ def time_scanner_single(t_separation):
     rho_t = integrate.odeint(von_neumann_tuneable, rho_0, t_span, args=(Rabi_freq, f_res, f_0, t_start, t_separation, t_width, interaction_time, amp, gamma))
     # rho_t = runge_kutta(f, rho_0, t_span)
     np.transpose(rho_t)
-    Exited_t = 1 - rho_t[:, 0]
+    Exited_t = NORM - rho_t[:, 0]
     dt = t_span[0] - t_span[1]
     N_avr = int(t_avr * 0.001 / dt)
     return np.mean(Exited_t[-N_avr:])
@@ -74,8 +74,8 @@ def time_scanner_single(t_separation):
 
 # START of the PROGRAM
 print('Maximum separation: '+str(t_separation_max)+' Number of sampling: '+str(N_sampling))
-
-plt.figure(1)
+#%%
+plt.figure(figsize=(5,3.5))
 plt.title('Protocol')
 plt.xlabel('Time of flight [ns]')
 plt.ylabel('Frequency [MHz]')
@@ -83,31 +83,33 @@ plt.plot(t_span*1000, double_tuneable_switch(t_span, t_start, t_separation, t_wi
 plt.plot(t_span*1000, np.ones(shape=t_span.shape)*f_res, label= 'Resonant detunning')
 plt.plot(t_span*1000, 1000*interogation(t_span, interaction_time), label= 'Interogation time')
 plt.plot(t_span * 1000, 1000 * buffering(t_span, interaction_time, t_buffer), label='Buffering time')
+plt.rc('legend', fontsize=8)
 plt.legend()
-plt.draw()
-
+plt.show()
+#%%
 # INITIAL STATE DEFINITION
 rho_0 = np.zeros(shape=[3])
-rho_0[0] = 1
+rho_0[0] = NORM
 
 rho_t = integrate.odeint(von_neumann_tuneable, rho_0, t_span, args=(Rabi_freq, f_res, f_0, t_start, t_separation, t_width, interaction_time, amp, gamma))
 np.transpose(rho_t)
-Exited_t = 1 - rho_t[:,0]
+Exited_t = NORM - rho_t[:,0]
 
 plt.figure(2)
 plt.plot(t_span, Exited_t, t_span, np.max(Exited_t)*interogation(t_span, interaction_time))
-plt.draw()
+plt.show()
 
 Exited_t_interaction = np.array(list(map(time_scanner_single, t_separation_span)))
 # Exited_t_interaction = time_scanner(interaction_time)
-
+#%%
 plt.figure(3)
 plt.title('Fluorescence signal vs separation')
 plt.xlabel('Separation [ns]')
 plt.ylabel('Fluorescence signal [AU]')
 plt.plot(t_separation_span, Exited_t_interaction)
-plt.draw()
-
+#plt.draw()
+plt.show()
+#%%
 FT_Intensity = np.fft.fft(Exited_t_interaction - np.mean(Exited_t_interaction))
 FT_Intensity = np.roll(FT_Intensity, -int(N_sampling/2))
 
@@ -116,7 +118,7 @@ plt.title('Fluorescence signal (-DC component) vs separation (Fourier Transform)
 plt.xlabel('Frequency [MHz]')
 plt.ylabel('Fluorescence signal FT [AU]')
 plt.plot(Span_1divt_int, np.abs(FT_Intensity))
-plt.draw()
+plt.show()
 
 comp_time = time.time()-program_start
 H = int(comp_time/3600)

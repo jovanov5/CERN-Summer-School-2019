@@ -122,7 +122,7 @@ def buffering(t, interaction_time, t_buffer):
 @numba.jit()
 def single_doppler_switch(t, interaction_time):
     t = 1000*t
-    amp = 1900
+    amp = 1900*0.9
     t_centre = interaction_time/2
     width = 3
     return amp*(G(t,t_centre,width)-G(0,t_centre,width))/(1-G(0,t_centre,width))*np.less_equal(t, interaction_time)
@@ -193,8 +193,20 @@ F_v = InterpolatedUnivariateSpline(x, v_unit_COMSOL, k=2)
 def comsol_doppler_shift(t, interaction_time):
     t = 1000*t  # conversion
     x_COMSOL = t * x_max / interaction_time
-    amp = 2560*3/4 * 0.75
+    amp = 2560*3/4*0.7
     return amp * np.less_equal(t, interaction_time) * F_v(x_COMSOL)
+
+
+@numba.jit()
+def double_hump(t, interaction_time):
+    t = 1000*t  # conversion ns to ms
+    amp = 2560*3/4*0.68
+    width = 1.8
+    t_sep = 6.5
+    t_1 = interaction_time/2 - t_sep/2
+    t_2 = interaction_time/2 + t_sep/2
+    return amp * np.less_equal(t, interaction_time) * (G(t, t_1, width) + G(t, t_2, width) - G(0 , t_1, width) - G(0 , t_2, width))/(G(t_1, t_1, width) + G(t_1, t_2, width) - G(0 , t_1, width) - G(0 , t_2, width))
+
 
 @numba.jit()
 def doppler_shift(t, t_second_pulse):  # from the graph in the paper, reconstruction of DS, obsolete

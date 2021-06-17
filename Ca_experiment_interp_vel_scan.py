@@ -9,7 +9,7 @@ sim_name = 'Ca Experiment Thermal Central with Interpolation'  # Intepolate sing
 
 # FREQUENCY DEFINITIONS (MHz)
 Rabi_Freq_Amp = 1.75  # Rabi Frequency amp for Mg experiment
-f_0 = 0  # set the reference
+f_0 = 15  # set the reference
 f_res = 0  # Let's say
 gamma = 375/1000000 # A coef for Mg I 3P1 to 1S0 457 nm
 Detune = f_res-f_0
@@ -36,14 +36,18 @@ rho_0[0] = 1  # FREE GROUND STATE
 # rho_0[1] = -1/2*Rabi_freq*Detune/(Detune**2+Rabi_freq**2)
 rho_0 = NORM*rho_0  # - NORMALIZATION is UPPED for NUMERICAL -
 
-#FREQ SCAN DEF
+#VEL SCAN DEF
 freq_span = 0.15
 N_sampling = 50
-f_0_span = np.linspace(0, freq_span, N_sampling)
-f_0_span += f_res
+# f_0_span = np.linspace(0, freq_span, N_sampling)
+# f_0_span += f_res
+E_0 = 40
+energy_span = 2
+E_span = np.linspace(-energy_span, energy_span, N_sampling)
+E_span = E_0 + E_span
 thermal_width = 20
-max_amp_thermal = (freq_span+Rabi_Freq_Amp/2/math.pi)*3.5
-amp_thermal_sampling = 25
+max_amp_thermal = 40
+amp_thermal_sampling = 100
 # --- amp_thermal_sampling_resolution = Rabi_Freq_Amp/10
 # --- amp_thermal_span = np.arrange(-max_amp_thermal, max_amp_thermal, amp_thermal_sampling_resolution)
 # uni = np.linspace(-math.pi*0.5, math.pi*0.5, amp_thermal_sampling) }}}
@@ -55,14 +59,15 @@ amp_thermal_span = np.linspace(-max_amp_thermal, max_amp_thermal, amp_thermal_sa
 # amp_thermal_span = np.arrange(-max_amp_thermal, max_amp_thermal, amp_thermal_sampling_resolution)
 # OPTION to pass it to the tan(x) to get finer resoltuion near zero if needed!!!!
 # PROBLEM with that is that each point is then weigther differently in the Distribution function *1/dtandx
-amp_thermal_span_extended = np.array([i for i in amp_thermal_span for j in f_0_span])
-f_0_span_extended = np.array([j for i in amp_thermal_span for j in f_0_span])
-inputs_span = list(zip(amp_thermal_span_extended, f_0_span_extended))
+amp_thermal_span_extended = np.array([i for i in amp_thermal_span for j in E_span])
+E_span_extended = np.array([j for i in amp_thermal_span for j in E_span])
+inputs_span = list(zip(amp_thermal_span_extended, E_span_extended))
 # max_amp_thermal = 40 # so I do't divide by 0
-#%%
+
 @numba.jit()
-def freq_scanner_single(amp_thermal, f_0):
-    rho_t = integrate.odeint(von_neumann_tunable_4_doppler, rho_0, t_span, args=(Rabi_Freq_Amp, f_res, f_0, t_start, t_separation, t_sep_big, t_width, interaction_time, gamma, amp_thermal))
+def freq_scanner_single(amp_thermal, E):
+    nu = np.sqrt(E_0/E)  # timeline normalisation
+    rho_t = integrate.odeint(von_neumann_tunable_4_doppler, rho_0, t_span, args=(nu*Rabi_Freq_Amp, nu*f_res, nu*f_0, t_start, t_separation, t_sep_big, t_width, interaction_time, nu*gamma, nu*amp_thermal))
     np.transpose(rho_t)
     Exited_t = NORM - rho_t[:, 0]
     return np.sum(Exited_t[-N_avr:])
@@ -72,8 +77,7 @@ if __name__ == '__main__':
     with mp.Pool(mp.cpu_count()) as p:
         start_message = sim_name + ': ' +' -freq span: ' + str(freq_span) + 'MHz Number of sampling: ' + str(N_sampling)+' Thermal width: '+str(thermal_width)+'('+str(max_amp_thermal)+')'+ 'MHz Number of samplings: '+str(amp_thermal_sampling) + '.'
         print(start_message)
-        #%%
-        plt.figure(figsize=(5,3.5))
+        plt.figure(1)
         psam = 100  # plotting sampling skip
         plt.title('Protocol')
         plt.xlabel('Time of flight [ns]')
@@ -86,8 +90,8 @@ if __name__ == '__main__':
         plt.plot(t_span[1::psam] * 1000, 0.5 * buffering(t_span, interaction_time, t_buffer)[1::psam], label='Buffering time')
         plt.legend()
         plt.savefig('a.pdf')
-        plt.show()
-#%%
+        plt.draw()
+
         rho_t = integrate.odeint(von_neumann_tunable_4_doppler, rho_0, t_span, args=(Rabi_Freq_Amp, f_res, f_0, t_start, t_separation, t_sep_big, t_width, interaction_time, gamma, 0*max_amp_thermal))
         np.transpose(rho_t)
         Exited_t = NORM - rho_t[:, 0]
@@ -98,42 +102,45 @@ if __name__ == '__main__':
         plt.draw()
 
         # send_start(sim_name, 'a.pdf', 'b.pdf', start_message)
-        Exited_f0_2D = np.array(list(p.starmap(freq_scanner_single, inputs_span)))
+        Exited_E_2D = np.array(list(p.starmap(freq_scanner_single, inputs_span)))
         p.close()
-        Exited_f0_2D = np.reshape(Exited_f0_2D, (-1, N_sampling))
-
+        Exited_E_2D = np.reshape(Exited_E_2D, (-1, N_sampling))
+#%%
         # Interpolation part !!!
-        f = interp2d(f_0_span, amp_thermal_span, Exited_f0_2D, kind= 'cubic')
-        N_sampling_new = 2*N_sampling
-        amp_thermal_sampling_new = 4*amp_thermal_sampling
-        amp_thermal_span = np.linspace(-max_amp_thermal, max_amp_thermal, amp_thermal_sampling_new)
-        f_0_span = np.linspace(0, freq_span, N_sampling_new)
-        Exited_f0_2D = f(f_0_span, amp_thermal_span)
+        f = interp2d(E_span, amp_thermal_span, Exited_E_2D, kind= 'cubic')
+        N_sampling = 8*N_sampling  # Removed new for easier iterating
+        amp_thermal_sampling = 8*amp_thermal_sampling
+        amp_thermal_span = np.linspace(-max_amp_thermal, max_amp_thermal, amp_thermal_sampling)
+        E_span = np.linspace(-energy_span, energy_span, N_sampling)
+        E_span = E_0 + E_span
+        Exited_E_2D = f(E_span, amp_thermal_span)
         # THERMAL EFFECTS
         if thermal_width != 0 :
             Distibution = np.exp(-1/2/(thermal_width)**2 * (amp_thermal_span-0)**2)
         else:
             Distibution = np.ones(shape= amp_thermal_span.shape)/amp_thermal_span.size
-        Excited_f0_thermal = np.matmul(Distibution,Exited_f0_2D)
+        Excited_E_thermal = np.matmul(Distibution,Exited_E_2D)
         # END of THERMAL Effects
 
+        # # Simetrically copy the results and stich together, not usefull here
+        # Excited_f0_thermal = np.append(np.flip(Excited_f0_thermal[1:], axis= 0), Excited_f0_thermal)
+        # Detunning_span = f_0_span-f_res
+        # temp = - np.flip(Detunning_span[1:], axis=0)
+        # Detunning_span = np.append(temp, Detunning_span)
 
-        Excited_f0_thermal = np.append(np.flip(Excited_f0_thermal[1:], axis= 0), Excited_f0_thermal)
-        Detunning_span = f_0_span-f_res
-        temp = - np.flip(Detunning_span[1:], axis=0)
-        Detunning_span = np.append(temp, Detunning_span)
-
-        np.save('Ca_therm_f', Detunning_span)
-        np.save('Ca_therm_E', Excited_f0_thermal)
+        np.save('Ca_therm_E_vel', E_span)
+        np.save('Ca_therm_Ex_vel', Excited_E_thermal)
         print(' -Data Saved- ')
-
+#%%
         plt.figure(3)
         plt.title('Fluorescence signal')
-        plt.xlabel('Starting frequency of the laser [MHz]')
-        plt.ylabel('Derivative of the fluorescence signal [AU]')
+        plt.xlabel('Beam energy [MeV]')
+        plt.ylabel('Fluorescence signal [AU]')
         # print(N_avr*NORM)
         # print(Exited_f0)
-        plt.plot(Detunning_span, Excited_f0_thermal)
+        m, b = np.polyfit(E_span, Excited_E_thermal, 1)
+
+        plt.plot(1./np.sqrt(E_span), Excited_E_thermal-m*E_span-b)
         plt.savefig('c.pdf')
         plt.draw()
 
@@ -145,3 +152,4 @@ if __name__ == '__main__':
 
         print('Computation time: ' + str(H) + ':' + str(M) + ':' + str(S))
         plt.show()
+

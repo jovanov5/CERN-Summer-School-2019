@@ -40,7 +40,7 @@ N_avr = int(t_avr*0.001/dt)
 
 # DEFINING INITIAL STATE
 rho_0 = np.zeros(shape=[3])
-rho_0[0] = 1
+rho_0[0] = NORM
 
 
 # TIME SCANNER FUNCTIONS
@@ -51,7 +51,7 @@ def time_scanner_single(t_separation, t_width):
     # t_span = np.arange(0,interaction_time+t_avr,dt_pref)
     rho_t = integrate.odeint(von_neumann_tuneable, rho_0, t_span, args=(Rabi_freq, f_res, f_0, t_start, t_separation, t_width, interaction_time, amp, gamma))
     np.transpose(rho_t)
-    Exited_t = 1 - rho_t[:, 0]
+    Exited_t = NORM - rho_t[:, 0]
     dt = t_span[0] - t_span[1]
     N_avr = int(t_avr * 0.001 / dt)
     return np.mean(Exited_t[-N_avr:])

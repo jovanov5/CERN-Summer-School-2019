@@ -5,7 +5,7 @@ program_start = time.time()
 # FREQUENCY DEFINITIONS
 Rabi_freq = 100  # Rabi frequency in MHz 62 real life estimate
 f_0 = 0  # set the reference
-f_res = 800  # Let's say
+f_res = 1350*0.7  # Let's say
 gamma = 111  # inverse lifetime in Mhz
 
 # TIME DEFINITIONS
@@ -18,22 +18,24 @@ t_span = np.linspace(0, interaction_time + t_avr, N_T_sampling)*0.001  # t in ms
 dt = t_span[0]-t_span[1]
 N_avr = int(t_avr*0.001/dt)
 
-
-plt.figure(1)
+#%%
+plt.figure(figsize=(5,3.5))
 plt.title('Protocol')
 plt.xlabel('Time of flight [ns]')
 plt.ylabel('Frequency [MHz]')
-# need to reactivate comsol import in header
-plt.plot(t_span*1000, comsol_doppler_shift(t_span, interaction_time), label = 'Doppler shifter laser detunning')
+# need to reactivate comsol import in header ... no more, use double gaussian
+plt.plot(t_span*1000, double_hump(t_span, interaction_time), label = 'Doppler shifter laser detunning')
+plt.plot(t_span*1000, comsol_doppler_shift(t_span, interaction_time), label = 'Doppler shifter laser detunning COMSOL')
 plt.plot(t_span*1000, np.ones(shape=t_span.shape)*f_res, label= 'Resonant detunning')
 plt.plot(t_span*1000, 1000*interogation(t_span, interaction_time), label= 'Interogation time')
+plt.rc('legend', fontsize=8)
 plt.legend()
 plt.show()
-
+#%%
 
 rho_0 = np.zeros(shape=[3])
 rho_0[0] = NORM
-rho_t = integrate.odeint(von_neumann, rho_0, t_span, args=(Rabi_freq, f_res, f_0, comsol_doppler_shift,
+rho_t = integrate.odeint(von_neumann, rho_0, t_span, args=(Rabi_freq, f_res, f_0, double_hump,
                                                            interaction_time, gamma))
 np.transpose(rho_t)
 Exited_t = NORM - rho_t[:, 0]
@@ -44,12 +46,12 @@ plt.plot(t_span, Exited_t, t_span, np.max(Exited_t)*interogation(t_span, interac
 plt.show()
 
 N_sampling = 1000
-f_0_span = np.linspace(-2500,500, N_sampling)
+f_0_span = np.linspace(-2000,500, N_sampling)
 f_0_span += f_res
 # Exited_f0 = np.empty(shape=f_0_span.shape)
 # index = 0
 # for f_0 in f_0_span:
-#     rho_t = integrate.odeint(von_neumann, rho_0, t_span, args=(Rabi_freq, f_res, f_0, comsol_doppler_shift,
+#     rho_t = integrate.odeint(von_neumann, rho_0, t_span, args=(Rabi_freq, f_res, f_0, double_hump,
 #                                                                interaction_time, gamma))
 #     np.transpose(rho_t)
 #     Exited_t = 1 - rho_t[:, 0]
@@ -58,7 +60,7 @@ f_0_span += f_res
 
 
 def freq_scanner_single(f_0):
-    rho_t = integrate.odeint(von_neumann, rho_0, t_span, args=(Rabi_freq, f_res, f_0, comsol_doppler_shift,
+    rho_t = integrate.odeint(von_neumann, rho_0, t_span, args=(Rabi_freq, f_res, f_0, double_hump,
                                                                interaction_time, gamma))
     np.transpose(rho_t)
     Exited_t = NORM - rho_t[:, 0]
@@ -115,3 +117,21 @@ M = int((comp_time-H*3600)/60)
 S = int(comp_time-3600*H-60*M)
 
 print('Computation time: ' + str(H) + ':' + str(M) + ':' + str(S))
+
+#%%
+test = np.genfromtxt('fig4b-Silverans_Double_Hump.csv', delimiter= ',')
+
+plt.figure(figsize=(3.5,3.5))
+offset = 9
+noise = 6500
+plt.plot(0.95*(f_0_span-f_0_span[np.argmax(Exited_f0_con)]), 1+ (np.log(Exited_f0_con+noise)-offset)/(np.max(np.log(Exited_f0_con+noise)-offset)))
+#plt.plot(f_0_span-f_0_span[np.argmax(Exited_f0_con)], Exited_f0_con/np.max(Exited_f0_con))
+plt.plot(test[:,0]-test[(np.argmax(test[:,1])),0], test[:,1]/np.max(test[:,1]))
+plt.xlabel('Detuning [MHz]')
+plt.legend(['Theory','Experiment'])
+plt.yticks([])
+plt.rc('legend', fontsize=7)
+
+plt.show()
+
+#%%

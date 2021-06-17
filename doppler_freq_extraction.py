@@ -68,17 +68,17 @@ if __name__ == '__main__':
         rabi_freq_reduced = rabi_freq_span/2/math.pi
         Resonance = p.map(resonance_extraction, rabi_freq_span)
         p.close()
-
-        plt.figure(1)
-        plt.title('Ramsey vs Rabi Frequency')
+#%%
+        plt.figure(figsize=(4.5,3.5))
+        plt.title('Measured vs Rabi Frequency')
         plt.xlabel('Rabi Frequency [MHz]')
-        plt.ylabel('Ramsey Frequency [MHz]')
+        plt.ylabel('Measured Frequency [MHz]')
         plt.plot(rabi_freq_reduced, Resonance, 'b+', label='Simulation Results')
         plotting = 10 ** np.linspace(0, 3, 100) / 2 / math.pi
         plt.plot(plotting, np.sqrt(f_res ** 2 + plotting ** 2), 'r', label='Theoretical Curve')
         plt.legend()
         plt.show()
-
+#%%
         print('Uncertainty in frequency:' +str(D_1divt_int))
 
         comp_time = time.time() - program_start

@@ -13,11 +13,12 @@ D_1divt_int = 1 / (t_separation_max - t_separation_min) * 1000  # unit conversio
 Span_1divt_int = np.arange(-N_sampling / 2, N_sampling / 2, 1) * D_1divt_int  # FREQUENCY span given by t_span_max and N_sampling
 
 # FREQUENCY DEFINITIONS
-Rabi_freq = 10  # Rabi frequency in MHz 62 real life estimate
+Rabi_freq = 500  # Rabi frequency in MHz 62 real life estimate
 f_0 = 0  # set the reference
-f_res = 500  # Let's say
+f_res = 25  # Let's say
 Detune = f_res - f_0  # Useful quantity
-gamma = 0  # inverse lifetime in Mhz
+tau = 10  # life time in ns
+gamma = 0*1/(tau/1000)  # inverse lifetime in Mhz
 
 # TIME DEFINITIONS in ns (ms conversion where needed)
 # dt_pref = 1e-5  # certain prefferable time step for my integrator in ms
@@ -34,12 +35,12 @@ N_avr = int(t_avr*0.001/dt)
 
 # DEFINING INITIAL STATE !!!! Important !!!
 rho_0 = np.zeros(shape=[3])
-rho_0[0] = 1  # FREE GROUND STATE
-# rho_0[0] = 1/2*(1+Detune/math.sqrt(Detune**2+Rabi_freq**2))  # EM+ION GROUND STATE
-# rho_0[1] = -1/2*Rabi_freq/math.sqrt(Detune**2+Rabi_freq**2)
-# rho_0[0] = 1/2*(1+Detune**2/(Detune**2+Rabi_freq**2))  # Rabi Oscillating State AVERAGED
-# rho_0[1] = -1/2*Rabi_freq*Detune/(Detune**2+Rabi_freq**2)
-
+rho_0[0] = NORM  # FREE GROUND STATE
+rho_0[0] = 1/2*(1+Detune/math.sqrt(Detune**2+Rabi_freq**2))  # EM+ION GROUND STATE
+rho_0[1] = -1/2*Rabi_freq/math.sqrt(Detune**2+Rabi_freq**2)
+rho_0[0] = 1/2*(1+Detune**2/(Detune**2+Rabi_freq**2))  # Rabi Oscillating State AVERAGED
+rho_0[1] = -1/2*Rabi_freq*Detune/(Detune**2+Rabi_freq**2)
+rho_0 *= NORM
 # TIME SCANNER FUNCTIONS
 @numba.jit()
 def time_scanner_single(t_separation, amp):
@@ -48,7 +49,7 @@ def time_scanner_single(t_separation, amp):
     # t_span = np.arange(0,interaction_time+t_avr,dt_pref)
     rho_t = integrate.odeint(von_neumann_tuneable, rho_0, t_span, args=(Rabi_freq, f_res, f_0, t_start, t_separation, t_width, interaction_time, amp, gamma))
     np.transpose(rho_t)
-    Exited_t = 1 - rho_t[:, 0]
+    Exited_t = NORM - rho_t[:, 0]
     dt = t_span[0] - t_span[1]
     N_avr = int(t_avr * 0.001 / dt)
     return np.mean(Exited_t[-N_avr:])
@@ -74,22 +75,22 @@ if __name__ == '__main__':
         print('Maximum separation: ' + str(t_separation_max) + ' Number of sampling: ' + str(N_sampling))
 
         kappa_num_samp = 200
-        kappa_span = np.linspace(0, 0.5*math.pi, kappa_num_samp)
+        kappa_span = np.linspace(0.01, 0.5*math.pi, kappa_num_samp)
         amp_span = kappa_span/np.sqrt(2*np.pi)/(t_width/1000)
         visibility = p.map(signal_extraction, amp_span)
         p.close()
-
-        fig = plt.figure(1)
+#%%
+        fig = plt.figure(figsize=(4.5,4))
         ax2 = fig.add_subplot(111)
         ax1 = ax2.twiny()
-        ax1.set_title('Visibility vs pulse height')
+        ax1.set_title('Visibility vs pulse height (Strong Driving)')
         ax1.set_xlabel(r'$\kappa$ [$\pi$]')
         ax1.set_ylabel('Visibility []')
-        ax1.plot(kappa_span / math.pi, visibility)
+        ax1.plot(2*kappa_span, visibility)
         ax2.plot(amp_span, np.zeros(shape=amp_span.shape), linestyle='')
         ax2.set_xlabel('Pulse height [MHz]')
         fig.show()
-
+#%%
         comp_time = time.time() - program_start
         H = int(comp_time / 3600)
         M = int((comp_time - H * 3600) / 60)
