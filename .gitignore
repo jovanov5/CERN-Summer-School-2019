@@ -11,3 +11,24 @@ Report/
 __pycache__/
 *.swp
 /~$CERN Summer Student 2019.pptx
+/ac_stark.png
+/double_hump.png
+/double_hump_prot.png
+/exp_freq.png
+/exp_time.png
+/lineshapes.png
+/linewidths.png
+/mine_diff_thermal.csv
+/mine_thermal.csv
+/ref_diff_thermal.csv
+/ref_thermal.csv
+/single_hump.png
+/single_hump_prot.png
+/switch_protocol.png
+/therm_prot.png
+/thermal_res.png
+/thremal_diff_res.png
+/vis_1.png
+/vis_2.png
+/vis_3.png
+/vis_4.png
