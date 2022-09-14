@@ -20,14 +20,15 @@ N_avr = int(t_avr*0.001/dt)
 
 #%%
 plt.figure(figsize=(5,3.5))
-plt.title('Protocol')
+#plt.title('Protocol')
 plt.xlabel('Time of flight [ns]')
 plt.ylabel('Frequency [MHz]')
 # need to reactivate comsol import in header ... no more, use double gaussian
 plt.plot(t_span*1000, single_doppler_switch(t_span, interaction_time), label = 'Doppler shifter laser detunning')
 plt.plot(t_span*1000, np.ones(shape=t_span.shape)*f_res, label= 'Resonant detunning')
-plt.plot(t_span*1000, 1000*interogation(t_span, interaction_time), label= 'Interogation time')
+#plt.plot(t_span*1000, 1000*interogation(t_span, interaction_time), label= 'Interogation time')
 plt.rc('legend', fontsize=8)
+plt.axvspan(30, 50, color='C2', alpha=0.5, lw=0, label= 'Interogation time')
 plt.legend()
 plt.show()
 #%%

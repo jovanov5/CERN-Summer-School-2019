@@ -20,16 +20,18 @@ N_avr = int(t_avr*0.001/dt)
 
 #%%
 plt.figure(figsize=(5,3.5))
-plt.title('Protocol')
+#plt.title('Protocol')
 plt.xlabel('Time of flight [ns]')
 plt.ylabel('Frequency [MHz]')
 # need to reactivate comsol import in header ... no more, use double gaussian
-plt.plot(t_span*1000, double_hump(t_span, interaction_time), label = 'Doppler shifter laser detunning')
-plt.plot(t_span*1000, comsol_doppler_shift(t_span, interaction_time), label = 'Doppler shifter laser detunning COMSOL')
-plt.plot(t_span*1000, np.ones(shape=t_span.shape)*f_res, label= 'Resonant detunning')
-plt.plot(t_span*1000, 1000*interogation(t_span, interaction_time), label= 'Interogation time')
+plt.plot(t_span*1000, double_hump(t_span, interaction_time), label = 'Doppler shifter laser detuning', color= 'C0')
+plt.plot(t_span*1000, comsol_doppler_shift(t_span, interaction_time), label = 'Doppler shifter laser detuning COMSOL', linestyle= '--', color= 'C0')
+plt.plot(t_span*1000, np.ones(shape=t_span.shape)*f_res, label= 'Resonant detuning', color= 'C1')
+#plt.plot(t_span*1000, 1000*interogation(t_span, interaction_time), label= 'Interogation time', color= 'C2')
 plt.rc('legend', fontsize=8)
+plt.axvspan(30, 50, color='C2', alpha=0.5, lw=0, label= 'Interogation time')
 plt.legend()
+plt.savefig('double_hump_prot.png', dpi=300)
 plt.show()
 #%%
 
