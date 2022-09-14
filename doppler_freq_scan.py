@@ -19,14 +19,14 @@ dt = t_span[0]-t_span[1]
 N_avr = int(t_avr*0.001/dt)
 
 #%%
-plt.figure(figsize=(5,3.5))
+plt.figure(figsize=(5.5,4))
 #plt.title('Protocol')
 plt.xlabel('Time of flight [ns]')
 plt.ylabel('Frequency [MHz]')
 # need to reactivate comsol import in header ... no more, use double gaussian
-plt.plot(t_span*1000, double_hump(t_span, interaction_time), label = 'Doppler shifter laser detuning', color= 'C0')
-plt.plot(t_span*1000, comsol_doppler_shift(t_span, interaction_time), label = 'Doppler shifter laser detuning COMSOL', linestyle= '--', color= 'C0')
-plt.plot(t_span*1000, np.ones(shape=t_span.shape)*f_res, label= 'Resonant detuning', color= 'C1')
+plt.plot(t_span*1000, double_hump(t_span, interaction_time), label = 'Doppler shifter laser detuning', color= 'darkblue')
+plt.plot(t_span*1000, comsol_doppler_shift(t_span, interaction_time), label = 'Doppler shifter laser detuning COMSOL', linestyle= '--', color= 'darkblue')
+plt.plot(t_span*1000, np.ones(shape=t_span.shape)*f_res, label= 'Resonant detuning', color= 'orange')
 #plt.plot(t_span*1000, 1000*interogation(t_span, interaction_time), label= 'Interogation time', color= 'C2')
 plt.rc('legend', fontsize=8)
 plt.axvspan(30, 50, color='C2', alpha=0.5, lw=0, label= 'Interogation time')
@@ -123,17 +123,18 @@ print('Computation time: ' + str(H) + ':' + str(M) + ':' + str(S))
 #%%
 test = np.genfromtxt('fig4b-Silverans_Double_Hump.csv', delimiter= ',')
 
-plt.figure(figsize=(3.5,3.5))
+plt.figure(figsize=(3.5,4))
 offset = 9
 noise = 6500
-plt.plot(0.95*(f_0_span-f_0_span[np.argmax(Exited_f0_con)]), 1+ (np.log(Exited_f0_con+noise)-offset)/(np.max(np.log(Exited_f0_con+noise)-offset)))
+plt.plot(0.95*(f_0_span-f_0_span[np.argmax(Exited_f0_con)]), 1+ (np.log(Exited_f0_con+noise)-offset)/(np.max(np.log(Exited_f0_con+noise)-offset)), color='darkblue')
 #plt.plot(f_0_span-f_0_span[np.argmax(Exited_f0_con)], Exited_f0_con/np.max(Exited_f0_con))
-plt.plot(test[:,0]-test[(np.argmax(test[:,1])),0], test[:,1]/np.max(test[:,1]))
+plt.plot(test[:,0]-test[(np.argmax(test[:,1])),0], test[:,1]/np.max(test[:,1]),color='orange')
 plt.xlabel('Detuning [MHz]')
 plt.legend(['Theory','Experiment'])
 plt.yticks([])
+plt.ylabel('Intensity/Excited population [arb. units, log]')
 plt.rc('legend', fontsize=7)
-
+plt.savefig('double_hump.png', dpi=300)
 plt.show()
 
 #%%

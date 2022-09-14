@@ -75,18 +75,20 @@ def time_scanner_single(t_separation):
 # START of the PROGRAM
 print('Maximum separation: '+str(t_separation_max)+' Number of sampling: '+str(N_sampling))
 #%%
-plt.figure(figsize=(5,3.5))
+plt.figure(figsize=(5.5,4))
 #plt.title('Protocol')
 plt.xlabel('Time of flight [ns]')
 plt.ylabel('Frequency [MHz]')
-plt.plot(t_span*1000, double_tuneable_switch(t_span, t_start, t_separation, t_width, interaction_time, amp), label = 'Doppler shifter laser detuning')
-plt.plot(t_span*1000, np.ones(shape=t_span.shape)*f_res, label= 'Resonant detuning')
+plt.plot(t_span*1000, double_tuneable_switch(t_span, t_start, t_separation, t_width, interaction_time, amp), label = 'Doppler shifter laser detuning',color='darkblue')
+plt.plot(t_span*1000, np.ones(shape=t_span.shape)*f_res, label= 'Resonant detuning',
+         color='orange')
 #plt.plot(t_span*1000, 1000*interogation(t_span, interaction_time), label= 'Interogation time')
 plt.axvspan(1400, 1420, color='C2', alpha=0.5, lw=0, label= 'Interogation time')
 #plt.plot(t_span * 1000, 1000 * buffering(t_span, interaction_time, t_buffer), label='Buffering time')
 plt.axvspan(1000, 1400, color='y', alpha=0.5, lw=0, label='Buffering time')
 plt.rc('legend', fontsize=8)
 plt.legend()
+plt.savefig('switch_protocol.png', dpi=300)
 plt.show()
 #%%
 # INITIAL STATE DEFINITION

@@ -77,7 +77,7 @@ amp = 1*0.15*math.pi/np.sqrt(2*np.pi)/(0.1/1000)  # Doppler switch amplitude (0.
 plt.figure(figsize=(5,4))
 plt.title('Fourier Transform')
 plt.xlabel('Frequency [MHz]')
-plt.ylabel('Fluorescence signal FT [AU]')
+plt.ylabel('Fluorescence signal FT [arb. units]')
 plot_single_FT('gamma1.npy','gamma1t.npy','c+','c--','1MHz line width')
 plot_single_FT('gamma10.npy','gamma10t.npy','y+','y--','10MHz line width')
 plot_single_FT('gamma25.npy','gamma25t.npy','r+','r--','25MHz line width')
@@ -86,6 +86,6 @@ plot_single_FT('gamma100.npy','gamma100t.npy','b+','b--','100MHz line width')
 plt.plot([Gen_Rabi, Gen_Rabi],[-0, 1],'k', label='Generalized Rabi')
 plt.legend()
 plt.xlim(885, 925)
-
+plt.savefig('lineshapes.png', dpi=300)
 plt.show()
 #%%

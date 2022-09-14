@@ -19,17 +19,18 @@ dt = t_span[0]-t_span[1]
 N_avr = int(t_avr*0.001/dt)
 
 #%%
-plt.figure(figsize=(5,3.5))
+plt.figure(figsize=(5.5,4))
 #plt.title('Protocol')
 plt.xlabel('Time of flight [ns]')
 plt.ylabel('Frequency [MHz]')
 # need to reactivate comsol import in header ... no more, use double gaussian
-plt.plot(t_span*1000, single_doppler_switch(t_span, interaction_time), label = 'Doppler shifter laser detunning')
-plt.plot(t_span*1000, np.ones(shape=t_span.shape)*f_res, label= 'Resonant detunning')
+plt.plot(t_span*1000, single_doppler_switch(t_span, interaction_time), label = 'Doppler shifter laser detunning', color= 'darkblue')
+plt.plot(t_span*1000, np.ones(shape=t_span.shape)*f_res, label= 'Resonant detunning', color= 'orange')
 #plt.plot(t_span*1000, 1000*interogation(t_span, interaction_time), label= 'Interogation time')
 plt.rc('legend', fontsize=8)
 plt.axvspan(30, 50, color='C2', alpha=0.5, lw=0, label= 'Interogation time')
 plt.legend()
+plt.savefig('single_hump_prot.png', dpi=300)
 plt.show()
 #%%
 
@@ -121,16 +122,18 @@ print('Computation time: ' + str(H) + ':' + str(M) + ':' + str(S))
 #%%
 test = np.genfromtxt('Silverans-Single_Hump.csv', delimiter= ',')
 
-plt.figure(figsize=(3.5,3.5))
+plt.figure(figsize=(4,4))
 offset = 9
 noise = 7000
-plt.plot(0.93*(f_0_span-f_0_span[np.argmax(Exited_f0_con)]), 0.5+(np.log(Exited_f0_con+noise)-offset)/(np.max(np.log(Exited_f0_con+noise)-offset)))
+plt.plot(0.93*(f_0_span-f_0_span[np.argmax(Exited_f0_con)]), 0.5+(np.log(Exited_f0_con+noise)-offset)/(np.max(np.log(Exited_f0_con+noise)-offset)),color='darkblue')
 #plt.plot(f_0_span-f_0_span[np.argmax(Exited_f0_con)], Exited_f0_con/np.max(Exited_f0_con))
-plt.plot(test[:,0]-test[(np.argmax(test[:,1])),0], test[:,1]/np.max(test[:,1]))
+plt.plot(test[:,0]-test[(np.argmax(test[:,1])),0], test[:,1]/np.max(test[:,1]),color='orange')
 plt.xlabel('Detuning [MHz]')
 plt.legend(['Theory','Experiment'])
 plt.yticks([])
+plt.ylabel('Intensity/Excited population [arb. units, log]')
 plt.rc('legend', fontsize=8)
+plt.savefig('single_hump.png', dpi=300)
 plt.show()
 
 #%%

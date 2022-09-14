@@ -93,13 +93,14 @@ print(*best_fit_osc)
 
 t_interaction_f = np.linspace(t_interaction_min,t_interaction_max, 10*N_sampling)
 #%%
-plt.figure(figsize=(4.5,3.5))
+plt.figure(figsize=(4.5,4))
 plt.title('Fluorescence signal vs separation')
 plt.xlabel('Separation [ms]')
-plt.ylabel('Fluorescence signal [AU]')
-plt.plot(t_interaction_span, Exited_t_interaction, 'b-')
-plt.plot(t_interaction_f, fitting_osc_decay(t_interaction_f, *best_fit_osc), 'r-')
+plt.ylabel('Fluorescence signal [arb. units]')
+plt.plot(t_interaction_span, Exited_t_interaction, color='darkblue', marker='.', linestyle='')
+plt.plot(t_interaction_f, fitting_osc_decay(t_interaction_f, *best_fit_osc), color='orange')
 plt.xlim(0.983,0.995)
+plt.savefig('exp_time.png', dpi=300)
 plt.show()
 #%%
 best_fit, best_fit_cov = opt.curve_fit(fitting_function, Span_1divt_int, FT_Exited_h, p0=[905, 1, 1/4/math.pi], maxfev=10000)  # fitting the estimated error results
